@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人中心</title>
+<link rel="stylesheet" href="../static/css/person-center.css" />
+<link rel="stylesheet" href="../static/wangEditor/wangEditor.min.css"/>
+<script type="text/javascript" src="../static/wangEditor/wangEditor.min.js"></script>
+<script type="text/javascript" src="../static/js/person-center.js"></script>
+<style type="text/css">
+.keyword-area{
+	float: left;
+}
+</style>
+
+</head>
+<body>
+	<div class="container">
+		<div class="top">
+			<div class="row">
+				<div class="col-lg-10">
+				<script type="text/javascript">
+				/*<!-- 个人信息面板 -->*/
+				$.ajax({
+					url : "/user/getSessionUser",
+					type : "GET",
+					cache: false,
+					async: false,
+					success : function(result) {
+						var user = result.extend.user;
+						if (result.code == 1) {
+							$(".hide-id").val(user.id);
+							$("#avatar").attr("src",user.userImage.path)
+							$(".username").val(user.username)
+							$(".hide-username").val(user.username)
+							$(".hide-role").val(user.role.id)
+							var registerDate = new Date(user.registerDate)
+							var lastLoginDate = new Date(user.lastLoginDate)
+							var progressBarDiv1 = $("<div class='progress-bar progress-bar-success'></div>")
+							var progressBarDiv2 = $("<div class='progress-bar progress-bar-info'></div>")
+							var rank = user.rank;
+							var exp = user.userExperience;
+							var nextRankExp = 0;
+							if(rank == 1){
+								nextRankExp = 5000
+							}else if(rank == 2){
+								nextRankExp = 10000
+							}else if(rank == 3){
+								nextRankExp = 20000
+							}else if(rank == 4){
+								nextRankExp = 40000
+							}else if(rank == 5){
+								nextRankExp = 80000
+							}
+							progressBarDiv1.css("width",(exp / nextRankExp)*100+"%")							
+							progressBarDiv2.css("width",(1-(exp / nextRankExp))*100+"%")
+										   .append("距离下一级还有")
+										   .append(parseInt((1-(exp / nextRankExp))*100)+"%")
+							
+							var progressDiv = $("<div class='progress'></div>").append(progressBarDiv1).append(progressBarDiv2)
+							$(".register-li").find("span").append(progressDiv).append(dateFormat(registerDate)+"注册 ").append(dateFormat(lastLoginDate)+"最后登录");
+							$(".password").val(user.password)
+							$(".phoneNum").val(user.phoneNum)
+							$(".email").val(user.email)
+							if(user.gender == 0){
+								$(".female").prop("checked","checked");
+							}else{
+								$(".male").prop("checked","checked");
+							}
+							
+						} else if (result.code == 0) {
+							alert(result.msg)
+						}
+					}
+				});
+				</script>
+				<!-- 个人信息区域 -->
+					<div class="panel panel-default user-message-area">
+						<form class="user-msg-form">
+							<div class="panel-heading">个人信息</div>
+							<!-- 隐藏用户id -->
+							<input type="text" class="hide-msg hide-id" value="">
+							<!-- 隐藏原始用户名 -->
+							<input type="text" value="" class="hide-msg hide-username" />
+							<!-- 隐藏role -->
+							<input type="text" value="" class="hide-msg hide-role">
+							<div class="panel-body">
+								<ul class="list-group">
+									<li class="list-group-item userImage-li">
+										<div id="profile-photo-div">											
+											<img alt="" id="avatar" src="" class="profile-phonto" title="点击更换头像" style="cursor: pointer;">
+										</div>
+										<input type="file" class="change-profile-photo btn" name="file" style="display: none" onchange="changePhoto();">
+									</li>
+									<li class="list-group-item username-li">
+										<label>用户名:&nbsp;</label>
+										<input type="text" value="" class="username" name="username" disabled="disabled" />
+										<small><span class="username-help-block"></span></small>
+									</li>
+									<li class="list-group-item register-li"><span></span></li>
+									<li class="list-group-item password-li">
+										<label>密码:&nbsp;</label>
+										<input type="password" value="" class="password" name="password" disabled="disabled" />
+										<small><span class="password-help-block"></span></small>
+									</li>
+									<li class="list-group-item gender-li" style="display: none;">
+										<label>性别:&nbsp;</label>
+										男&nbsp;<input type="radio" value="1" class="gender male" name="gender" />
+										&nbsp;&nbsp;
+										女&nbsp;<input type="radio" value="0" class="gender female" name="gender" />
+										<small><span class="gender-help-block"></span></small>
+									</li>
+									<li class="list-group-item phoneNum-li">
+										<label>手机号:&nbsp;</label> 
+										<input type="tel" value="" class="phoneNum" name="phoneNum" disabled="disabled" />
+										<small><span class="phoneNum-help-block"></span></small>
+									</li>
+									<li class="list-group-item email-li">
+										<label>邮箱:&nbsp;</label> 
+										<input type="email" value="" class="email" name="email" disabled="disabled" />
+										<small><span class="email-help-block"></span></small>
+									</li>
+								</ul>
+							</div>
+							<div class="panel-footer">
+								<button type="button" class="btn btn-primary update-btn" value="修改">修改</button>
+							</div>
+						</form>
+					</div>
+					<!-- 导航条 -->
+					<ul class="nav nav-pills">
+						<li class="presentation active my-post"><a href="javascript: ;">我的帖子</a></li>
+					  	<li class="presentation my-data"><a href="javascript: ;">我的资料</a></li>
+					  	<li class="presentation my-secret-msg"><a href="javascript: ;">我的私信</a></li>
+					  	<li class="presentation my-concern"><a href="javascript: ;">我的关注</a></li>
+					  	<li class="presentation"><a href="javascript: ;" data-toggle="modal" data-target="#dataModal">点击发布资料</a></li>
+					  	<li class="presentation"><a href="javascript: ;" data-toggle="modal" data-target="#postingModal">点击发布帖子</a></li>
+					</ul>
+					<script type="text/javascript">
+	
+						/*
+						 * 导航栏显示控制
+						 * 
+						 * */
+						$(".presentation").each(function(index,item) {
+							$(item).click(function() {
+								if(!$(this).hasClass("active")){
+									$(".presentation").each(function(index,item) {
+										$(item).removeClass("active");
+									})
+									$(this).addClass("active");
+								}
+								
+							})
+						})
+						
+						/*
+						获取我发的帖子的数量
+						*/
+						
+						getMyPostCount();
+						/*
+							获取我上传的文件的数量
+						*/
+						getMyDataCount();
+						
+						/*
+							获取我的私信的数量
+						*/
+						getMySecretMsg();
+						
+						/*
+							获取我的关注的数量
+						*/
+						getMyConcern();
+						
+						var userId = $(".hide-id").val();
+						search_my_post();
+					</script>					
+				</div>
+			</div>
+
+		</div>
+		<div class="row person-post-area"></div>
+	</div>
+	
+	
+	<!-- 发帖框 -->
+	<div class="modal fade bs-example-modal-lg" id="postingModal" tabindex="-1" role="dialog" aria-labelledby="postingModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="postingModalLabel">发布新帖</h4>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group">
+							<div class="dropdown">
+								<button class="btn btn-default dropdown-toggle postTypeSelBtn" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+   									选择帖子分类
+   									<span class="caret"></span>
+ 									</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									<li><a href="javascript: ;" onclick="posting_type_change(this)">求助帖子</a></li>
+									<li><a href="javascript: ;" onclick="posting_type_change(this)">介绍帖子</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 keyword-area">
+							<label class="lable-info">选择桥梁类型</label>
+							<ul>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="1" class="keyword"><span>铁路桥</span></li>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="2" class="keyword"><span>公路桥</span></li>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="3" class="keyword"><span>人行桥</span></li>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="4" class="keyword"><span>高架桥</span></li>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="5" class="keyword"><span>木桥</span></li>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="6" class="keyword"><span>刚桥</span></li>
+								<li class="col-lg-2"><input type="checkbox" name="keyword" value="7" class="keyword"><span>钢筋混凝土桥</span></li>
+							</ul>
+						</div>
+						<div class="form-group col-lg-12 century-area">
+							<label class="lable-info">选择桥梁年代</label>
+							<ul>
+								<li class="col-lg-2"><input type="radio" name="century" value="1" class="century"><span>-18</span></li>
+								<li class="col-lg-2"><input type="radio" name="century" value="2" class="century"><span>18-19</span></li>
+								<li class="col-lg-2"><input type="radio" name="century" value="3" class="century"><span>20</span></li>
+								<li class="col-lg-2"><input type="radio" name="century" value="4" class="century"><span>21</span></li>
+							</ul>
+						</div>
+						<div class="form-group">
+							<label for="recipient-name" class="control-label">主题</label>
+							<input type="text" class="form-control postTitle" id="postTitle" name="postTitle">
+						</div>
+						<div class="form-group">
+							<label for="message-text" class="control-label">内容</label>
+							<div id="editor"></div>
+							<script type="text/javascript" src="../static/js/rich-text-editor.js"></script>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary release-btn">发布</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 发文件框 -->
+	<div class="modal fade bs-example-modal-lg" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="dataModalLabel">发布文件</h4>
+				</div>
+				<div class="modal-body">
+					<form>
+						<!-- 选择上传文件的类型 -->
+						<div class="form-group">
+							<div class="dropdown">
+								<button class="btn btn-default dropdown-toggle dataTypeSelBtn" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+   									选择文件类型<span class="caret"></span>
+ 								</button>
+								<ul class="dropdown-menu data-type-ul" aria-labelledby="dropdownMenu2">
+									<li><a href="javascript: ;">word文档</a></li>
+									<li><a href="javascript: ;">文本文档</a></li>
+									<li><a href="javascript: ;">PPT</a></li>
+									<li><a href="javascript: ;">图片</a></li>
+									<li><a href="javascript: ;">压缩文件</a></li>
+								</ul>
+							</div>
+							<br/>
+						</div>
+						<!-- 对上传文件的描述 -->
+						<div class="form-group">
+							<label class="control-label">描述</label>
+							<div class="form-group">  
+						         <input id="description" class="form-control description" name="description" type="text" placeholder="请描述上传内容...">  
+						    </div> 
+						</div>
+						<!-- 文件上传 -->
+						<div class="form-group">
+							<label class="control-label">文件</label>
+							<div class="form-group">  
+						         <input id="data" name="data" type="file" class="data" style="display: none"> 
+						         <button class="btn btn-primary broswer" type="button">浏览...</button>
+						    </div> 
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary data-upload">发布</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

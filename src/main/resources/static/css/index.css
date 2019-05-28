@@ -1,0 +1,208 @@
+body, a {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #737373;
+	line-height: 1.42857143;
+}
+
+img {
+	width: 100%;
+}
+a:hover{
+	text-decoration:none;
+}
+.page-header {
+	padding: 0;
+	margin: 0;
+}
+
+.container-header {
+	width: 100%;
+}
+
+.logoandlogin {
+	height: 104px;
+}
+
+.logo-top {
+	float: left;
+	padding-top: 20px;
+}
+
+.login-top {
+	float: right;
+	padding-top: 40px;
+	margin-right: 15px;
+	text-align: right;
+}
+
+.login-top a span {
+	padding: 5px;
+}
+
+.nav-top {
+	width: 100%;
+	height: 40px;
+	background-color: #989898;
+}
+
+ul{
+	list-style:none;
+}
+
+.inner {
+	width: 825px;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.main-menu ul li {
+	list-style: none;
+	float: left;
+	text-align: center;
+	display: block;
+	width: 125px;
+}
+
+.main-menu>ul>li>a {
+	height: 40px;
+	line-height: 40px;
+	padding: 0px 0px;
+	display: block;
+	font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #ffffff;
+	font-weight: bold;
+	text-shadow: 0px -1px rgba(0, 0, 0, 0.14);
+	text-transform: uppercase;
+}
+
+.search-area {
+	margin-top: 15px;
+}
+.nav-ul{
+    margin-left: -45px;
+}
+
+
+.hot-post-area {
+	margin-top: 30px;
+	font-size: 14px;
+}
+
+.hot-post-area>ul>li {
+	margin-left: -40px;
+	margin-top: 15px;
+}
+
+.text-area {
+	text-align: left;
+}
+
+.hot-post-title-area, .post-author-msg {
+	border-bottom: 1px solid #e1e1e1;
+}
+.data-area{
+    margin-top: 15px;
+}
+
+.data-area-left{
+	margin-top: 15px;
+}
+.data-area-left>ul>li{
+	margin-left: -40px;
+}
+.data-area-right{
+	margin-top: 15px;
+}
+.data-img>a>img{
+	width: 70%;
+}
+.data-area-left>ul>li>div, .data-area-left>ul>li>div>div{
+	padding: 0;
+	margin-top: 1px;
+}
+.data-area-right>ul>li>div, .data-area-right>ul>li>div>div{
+	padding: 0;
+	margin-top: 1px;
+}
+.data{
+    border-bottom: 2px solid #d4d4d4;
+}
+.date-p{
+	cursor: pointer;
+}
+.title{
+	border-bottom: 3px solid #d4d4d4;
+}
+.title-lable{
+	font-size: 20px; 
+	margin-left: 15px;
+}
+.title-more{
+	float: right;
+	margin-right: 15px;
+}
+.media-body{
+	width: auto;
+	margin-left: 10px;
+}
+.content-main-right{
+	margin-top:15px;
+}
+.content-main-right>ul, .content-main-right>ul>li, .content-main-right>ul>li>div, .content-main-right>ul>li>div>div{
+	padding: 0;
+}
+.help-post-ul>li, .intro-post-ul>li{
+	margin-top:15px;
+}
+.floors-span{
+	display: inline-block;
+
+	width: 50px;
+	
+	height: 30px;
+	
+	line-height: 26px;
+	
+	margin-right: 20px;
+	
+	text-align: center;
+	
+	background: url(//tb2.bdstatic.com/tb/img/f_reply_bg_89030dc.png) no-repeat;
+}
+.li-line{
+	padding: 10px 0;
+	margin: 0 20px;
+	position:relative;
+}
+.post-ul, .data-ul, .page-ul{
+	display:inline-block;
+}
+.post-li, .data-li{
+	border-bottom: 1px dotted #e4e6eb;
+	padding:15px;
+}
+.post-li:hover, .data-li:hover{
+	background-color:#eceef2;
+}
+.latest-reply-icon{
+	display: inline-block;
+	text-align: center;
+	background: url(http://localhost:8080/resources/last_reply_icon.png) no-repeat;
+}
+.user-div{
+	font-size:12px;
+	color: #999999;
+}
+.user-div > .glyphicon{
+	font-size:12px;
+	color: #e2e1e1;
+}
+.author-div, .date-div{
+	text-align:center;
+	padding:3px;
+}
+.data-desc{
+	margin-top:10px;
+}

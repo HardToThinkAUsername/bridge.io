@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.RolePermissionMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.RolePermission">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <association property="permission" column="permission_id" select="com.dlu.ghh.mapper.PermissionMapper.selectByPrimaryKey"></association>
+    <association property="role" column="role_id" select="com.dlu.ghh.mapper.RoleMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from role_permission_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.RolePermission" useGeneratedKeys="true" keyProperty="id">
+    insert into role_permission_tb (id, permission_id, role_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{permission.id}, #{role.id}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.RolePermission">
+    update role_permission_tb
+    set permission_id = #{permission.id},
+      role_id = #{role.id}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, permission_id, role_id
+    from role_permission_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, permission_id, role_id
+    from role_permission_tb
+  </select>
+  <!-- 根据权限id和角色id查询 -->
+  <select id="selectByPerIdAndRoleId" resultType="java.lang.Integer">
+  	select count(id) 
+  	from role_permission_tb
+  	where permission_id=#{permissionId} and role_id=#{roleId}
+  </select>
+</mapper>

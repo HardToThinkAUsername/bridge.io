@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.User">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="phone_num" jdbcType="VARCHAR" property="phoneNum" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="register_date" jdbcType="TIMESTAMP" property="registerDate" />
+    <result column="last_login_date" jdbcType="TIMESTAMP" property="lastLoginDate" />
+    <result column="user_experience" jdbcType="INTEGER" property="userExperience" />
+    <result column="disable" jdbcType="INTEGER" property="disable" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="shutup" jdbcType="INTEGER" property="shutup" />
+    <result column="praise_times" jdbcType="INTEGER" property="praiseTimes" />
+    <result column="reply_times" jdbcType="INTEGER" property="replyTimes" />
+    <result column="continuous_signin_times" jdbcType="INTEGER" property="continuousSigninTimes"/>
+    <result column="last_signin_date" jdbcType="TIMESTAMP" property="lastSigninDate"/>
+    <association property="role" column="role_id" select="com.dlu.ghh.mapper.RoleMapper.selectByPrimaryKey"></association>
+    <association property="userImage" column="user_img_id" select="com.dlu.ghh.mapper.ImageMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <sql id="selectColumn">
+  	id, username, address, password, phone_num, email, role_id, register_date, 
+    last_login_date, user_img_id, user_experience, disable, gender, shutup, 
+    praise_times, reply_times, continuous_signin_times, last_signin_date
+    from user_tb
+  </sql>
+  <!-- 删除记录 -->
+  <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    update user_tb
+    set 
+    disable=1
+    where id=#{id} and disable=0
+  </update>
+  <!-- 插入记录 -->
+  <insert id="insert" parameterType="com.dlu.ghh.bean.User" useGeneratedKeys="true" keyProperty="id">
+    insert into user_tb (id, username, address, 
+      password, phone_num, email, 
+      role_id, register_date, last_login_date, 
+      user_img_id, user_experience, disable, 
+      gender,  shutup, 
+      praise_times, reply_times,continuous_signin_times,last_signin_date)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{phoneNum,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{role.id}, #{registerDate,jdbcType=TIMESTAMP}, #{lastLoginDate,jdbcType=TIMESTAMP}, 
+      #{userImage.id}, #{userExperience,jdbcType=INTEGER}, #{disable,jdbcType=INTEGER}, 
+      #{gender,jdbcType=INTEGER}, #{shutup,jdbcType=INTEGER}, 
+      #{praiseTimes,jdbcType=INTEGER}, #{replyTimes,jdbcType=INTEGER}, #{continuousSigninTimes,jdbcType=INTEGER}, #{lastSigninDate,jdbcType=TIMESTAMP})
+  </insert>
+  <!-- 根据主键修改 -->
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.User">
+    update user_tb
+    set username = #{username,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      phone_num = #{phoneNum,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      role_id = #{role.id},
+      register_date = #{registerDate,jdbcType=TIMESTAMP},
+      last_login_date = #{lastLoginDate,jdbcType=TIMESTAMP},
+      user_img_id = #{userImage.id},
+      user_experience = #{userExperience,jdbcType=INTEGER},
+      disable = #{disable,jdbcType=INTEGER},
+      gender = #{gender,jdbcType=INTEGER},
+      shutup = #{shutup,jdbcType=INTEGER},
+      praise_times = #{praiseTimes,jdbcType=INTEGER},
+      reply_times = #{replyTimes,jdbcType=INTEGER},
+      continuous_signin_times = #{continuousSigninTimes,jdbcType=INTEGER},
+      last_signin_date = #{lastSigninDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER} and disable=0
+  </update>
+  <!-- 根据主键选择性修改 -->
+  <update id="updateByPrimaryKeySelective">
+  	update user_tb
+    set 
+    <if test="id != null">
+      id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="username != null and username != ''">
+      , username = #{username,jdbcType=VARCHAR}
+    </if>
+    <if test="address != null and address != ''">
+      , address = #{address,jdbcType=VARCHAR}
+    </if>
+    <if test="password != null and password != ''">
+      , password = #{password,jdbcType=VARCHAR}
+    </if>
+    <if test="disable != null">
+      , disable = #{disable,jdbcType=TINYINT}
+    </if>
+    <if test="phoneNum != null and phoneNum != ''">
+      , phone_num = #{phoneNum,jdbcType=VARCHAR}
+    </if>
+    <if test="email != null and email != ''">
+      , email = #{email,jdbcType=VARCHAR}
+    </if>
+    <if test="role != null">
+      , role_id = #{role.id}
+    </if>
+    <if test="registerDate != null">
+      , register_date = #{registerDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="lastLoginDate != null">
+      , last_login_date = #{lastLoginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="userImage != null">
+      ,user_img_id = #{userImage.id}
+    </if>
+    <if test="userExperience != null">
+      , user_experience = #{userExperience,jdbcType=INTEGER}
+    </if>
+    <if test="gender != null">
+      , gender = #{gender,jdbcType=INTEGER}
+    </if>
+    <if test="shutup != null">
+      , shutup = #{shutup,jdbcType=INTEGER}
+    </if>
+    <if test="praiseTimes != null">
+      , praise_times = #{praiseTimes,jdbcType=INTEGER}
+    </if>
+    <if test="replyTimes != null">
+      , reply_times = #{replyTimes,jdbcType=INTEGER}
+    </if>
+    <if test="continuousSigninTimes != null">
+      , continuous_signin_times = #{continuousSigninTimes,jdbcType=INTEGER}
+    </if>
+    <if test="lastSigninDate != null">
+      , last_signin_date = #{lastSigninDate,jdbcType=TIMESTAMP}
+    </if>
+    where id = #{id,jdbcType=INTEGER} and disable=0
+  </update>
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="selectColumn"></include>
+    where id = #{id,jdbcType=INTEGER} and disable=0
+  </select>
+  <!-- 查询所有 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+	<include refid="selectColumn"></include>
+    where disable=0
+  </select>
+  <!-- 根据用户名查询 -->
+  <select id="selectByUsername" resultMap="BaseResultMap">
+  	select 
+	<include refid="selectColumn"></include>
+    where username = #{username,jdbcType=VARCHAR} and disable=0
+  </select>
+  <!-- 根据参数可选性的模糊查询 -->
+  <select id="fuzzySelectSelective" resultMap="BaseResultMap">
+    select 
+	<include refid="selectColumn"></include>
+	where 
+	<if test="id != null">
+		id=#{id}
+	</if>
+	<if test="username != null and username != ''">
+		username like CONCAT('%',#{username},'%')
+	</if>
+	<if test="address != null and address != ''">
+		address like CONCAT('%',#{address},'%')
+	</if>
+	<if test="role != null">
+		role_id=#{role.id}
+	</if> and disable=0
+	
+  </select>
+</mapper>

@@ -1,0 +1,37 @@
+@charset "UTF-8";
+a{
+	text-decoration: none;
+}
+.panel-body{
+	padding-bottom: 0;
+    padding-top: 0px;
+}
+input{
+	border:none;
+	background: none;
+}
+.hide-msg{
+	display:none;
+}
+ul, li{
+	list-style: none;
+}
+#profile-photo-div{
+	width:88px;
+	height:88px;
+}
+.gender-li{
+	display:none;
+}
+.w-e-text > p > img , .w-e-text > p >div> img{
+	width:5%;
+} 
+.sign-in-div{
+	float:right;
+}
+.my-post-li{
+	border-bottom: 1px dotted #e4e6eb;
+}
+.my-post-li:hover{
+	background-color:#eceef2;
+}

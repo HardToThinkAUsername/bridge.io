@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.FloorMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.Floor">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="praised_times" jdbcType="INTEGER" property="praisedTimes" />
+    <result column="replyed_times" jdbcType="INTEGER" property="replyedTimes" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <association property="user" column="user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+    <association property="post" column="post_id" select="com.dlu.ghh.mapper.PostMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from floor_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.Floor" useGeneratedKeys="true" keyProperty="id">
+    insert into floor_tb (id, user_id, post_id, 
+      date, praised_times, 
+      replyed_times, content)
+    values (#{id,jdbcType=INTEGER}, #{user.id}, #{post.id}, 
+      #{date,jdbcType=TIMESTAMP}, #{praisedTimes,jdbcType=INTEGER}, 
+      #{replyedTimes,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.Floor">
+    update floor_tb
+    set user_id = #{user.id},
+      post_id = #{post.id},
+      date = #{date,jdbcType=TIMESTAMP},
+      praised_times = #{praisedTimes,jdbcType=INTEGER},
+      replyed_times = #{replyedTimes,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dlu.ghh.bean.Floor">
+   update floor_tb
+    set
+    <if test="user != null">
+	    user_id = #{user.id}
+    </if>
+    <if test="post != null">
+	    , post_id = #{post.id}
+    </if>
+    <if test="date != null">
+        , date = #{date,jdbcType=TIMESTAMP}
+    </if>
+    <if test="praisedTimes != null">
+	    , praised_times = #{praisedTimes,jdbcType=INTEGER}
+    </if>
+    <if test="replyedTimes != null">
+        , replyed_times = #{replyedTimes,jdbcType=INTEGER}
+    </if>
+    <if test="content != null and content != ''">
+        , content = #{content,jdbcType=LONGVARCHAR}
+    </if> 
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, user_id, post_id, date, praised_times, replyed_times, content
+    from floor_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, post_id, date, praised_times, replyed_times, content
+    from floor_tb order by date DESC
+  </select>
+  <!--根据帖子id 查询楼层 -->
+  <select id="selectByPostId" resultMap="BaseResultMap">
+    select id, user_id, post_id, date, praised_times, replyed_times, content
+    from floor_tb 
+    where post_id=#{id,jdbcType=INTEGER} order by date DESC
+  </select>
+  <!-- 根据帖子id删除floor -->
+  <delete id="deleteByPostId">
+  	delete from floor_tb
+  	where 
+  	post_id=#{id}
+  </delete>
+</mapper>

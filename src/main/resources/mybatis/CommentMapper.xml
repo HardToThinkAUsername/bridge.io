@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.CommentMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.Comment">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <association property="floor" column="floor_id" select="com.dlu.ghh.mapper.FloorMapper.selectByPrimaryKey"></association>
+    <association property="user" column="user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from comment_tb
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.Comment" useGeneratedKeys="true" keyProperty="id">
+    insert into comment_tb (id, floor_id, date, content,user_id)
+    values (#{id,jdbcType=BIGINT}, #{floor.id},
+      #{date,jdbcType=TIMESTAMP},#{content,jdbcType=LONGVARCHAR}, #{user.id})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.Comment">
+    update comment_tb
+    set floor_id = #{floor.id},
+      date = #{date,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+      user_id = #{user.id}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, floor_id, date, user_id, content
+    from comment_tb
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, floor_id, date, user_id, content
+    from comment_tb
+  </select>
+  <!-- 根据floorid查询 -->
+  <select id="selectByFloorId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select id, floor_id, date, user_id, content
+    from comment_tb
+    where floor_id=#{floorId}
+  </select>
+  <!-- 根据floorId删除 -->
+  <delete id="deleteByFloorId">
+  	delete from comment_tb
+  	where floor_id=#{floorId}
+  </delete>
+</mapper>

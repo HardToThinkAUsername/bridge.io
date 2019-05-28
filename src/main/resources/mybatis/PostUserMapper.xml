@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.PostUserMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.PostUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="praised" jdbcType="INTEGER" property="praised" />
+    <association property="post" column="post_id" select="com.dlu.ghh.mapper.PostMapper.selectByPrimaryKey"></association>   
+    <association property="user" column="user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from post_user_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.PostUser" useGeneratedKeys="true" keyProperty="id">
+    insert into post_user_tb (id, post_id, user_id, 
+      praised)
+    values (#{id,jdbcType=INTEGER}, #{post.id}, #{user.id}, 
+      #{praised,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.PostUser">
+    update post_user_tb
+    set post_id = #{post.id},
+      user_id = #{user.id},
+      praised = #{praised,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, post_id, user_id, praised
+    from post_user_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, post_id, user_id, praised
+    from post_user_tb
+  </select>
+  
+  <!-- 根据帖子id和用户id查询记录 -->
+  <select id="selectByPostIdAndUserId" resultMap="BaseResultMap">
+  	select id, post_id, user_id, praised
+    from post_user_tb
+    where post_id=#{postId} and user_id=#{userId}
+  </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.ImageMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.Image">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from img_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.Image" useGeneratedKeys="true" keyProperty="id">
+    insert into img_tb (id, path)
+    values (#{id,jdbcType=INTEGER}, #{path,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.Image">
+    update img_tb
+    set path = #{path,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, path
+    from img_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, path
+    from img_tb
+  </select>
+  <select id="selectByPath" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select id, path 
+  	from img_tb
+  	where  path=#{path,jdbcType=VARCHAR} 
+  </select>
+</mapper>

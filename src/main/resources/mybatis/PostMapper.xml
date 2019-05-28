@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.PostMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.Post">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="post_title" jdbcType="VARCHAR" property="postTitle" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="floors" jdbcType="INTEGER" property="floors" />
+    <result column="readed_times" jdbcType="INTEGER" property="readedTimes" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="praised_times" jdbcType="INTEGER" property="praisedTimes" />
+    <result column="replyed_times" jdbcType="INTEGER" property="replyedTimes" />
+    <result column="post_body" jdbcType="LONGVARCHAR" property="postBody" />
+    <result column="century" jdbcType="INTEGER" property="century" />
+    <association property="user" column="user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+    <association property="latestReplyUser" column="latest_reply_user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <sql id="select_column">
+  	 id, post_title, user_id, date, type, floors, readed_times, status, 
+     praised_times, latest_reply_user_id, post_body,century
+     from post_tb
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from post_tb
+    where id = #{id,jdbcType=INTEGER} and (status=0 or status=1)
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.Post" useGeneratedKeys="true" keyProperty="id">
+    insert into post_tb (id, post_title, user_id, 
+      date, type,
+      floors, readed_times, status, 
+      praised_times, latest_reply_user_id, post_body, username,century
+      )
+    values (#{id,jdbcType=INTEGER}, #{postTitle,jdbcType=VARCHAR}, #{user.id}, 
+      #{date,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},  
+      #{floors,jdbcType=INTEGER}, #{readedTimes,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{praisedTimes,jdbcType=INTEGER}, #{latestReplyUser.id}, #{postBody,jdbcType=LONGVARCHAR}, #{user.username,jdbcType=VARCHAR},
+      #{century,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.Post">
+    update post_tb
+    set post_title = #{postTitle,jdbcType=VARCHAR},
+      user_id = #{user.id},
+      date = #{date,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      floors = #{floors,jdbcType=INTEGER},
+      readed_times = #{readedTimes,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      praised_times = #{praisedTimes,jdbcType=INTEGER},
+      latest_reply_user_id = #{latestReplyUser.id},
+      post_body = #{postBody,jdbcType=LONGVARCHAR},
+      century = #{century,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER} and status=0
+  </update>
+  <!-- 根据主键选择性更改post -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.dlu.ghh.bean.Post">
+    update post_tb
+    set 
+    <if test="id != null">
+	    id = #{id}
+    </if>
+    <if test="postTitle != null and postTitle != ''">
+	    , post_title = #{postTitle,jdbcType=VARCHAR}
+    </if>
+    <if test="user != null">
+	    , user_id = #{user.id}
+    </if>
+    <if test="date != null">
+	    , date = #{date,jdbcType=TIMESTAMP}
+    </if>
+    <if test="type != null">
+	    , type = #{type,jdbcType=INTEGER}
+    </if>
+    <if test="floors">
+	    , floors = #{floors,jdbcType=INTEGER}
+    </if>
+    <if test="readedTimes != null">
+	    , readed_times = #{readedTimes,jdbcType=INTEGER}
+    </if>
+    <if test="status != null">
+        , status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="praisedTimes != null">
+	    , praised_times = #{praisedTimes,jdbcType=INTEGER}
+    </if>
+    <if test="latestReplyUser != null">
+	    , latest_reply_user_id = #{latestReplyUser.id}
+    </if>
+    <if test="postBody != null and postBody != ''">
+	    , post_body = #{postBody,jdbcType=LONGVARCHAR}
+    </if>
+    <if test="century != null">
+	    , century = #{century,jdbcType=INTEGER}
+    </if>
+    where id = #{id,jdbcType=INTEGER} and (status=0 or status=2)
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="select_column"></include>
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <!-- 查询所有帖子 根据被赞的次数递减排序 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="select_column"></include>
+	where status=0 order by praised_times DESC
+  </select>
+  <!-- 查询所有求助类帖子 根据时间递减排序 -->
+  <select id="selectHelpPost" resultMap="BaseResultMap">
+    select 
+    <include refid="select_column"></include>
+	where status=0 and type=0 order by date DESC
+  </select>
+  <!-- 查询所有介绍类帖子  根据时间递减排序 -->
+  <select id="selectIntroPost" resultMap="BaseResultMap">
+    select 
+    <include refid="select_column"></include>
+	where status=0 and type=1 order by date DESC
+  </select>
+  <!-- 模糊查询所有类型的帖子 -->
+  <select id="selectAllTypePostFuzzy" resultMap="BaseResultMap">
+  	select 
+  	<include refid="select_column"></include>
+	where status=0 and post_title like #{postTitle,jdbcType=VARCHAR} order by date DESC
+  </select>
+  <!-- 模糊查询求助类帖子 -->
+  <select id="selectHelpPostFuzzy" resultMap="BaseResultMap">
+  	select 
+  	<include refid="select_column"></include>
+	where status=0 and type=0 and post_title like #{postTitle,jdbcType=VARCHAR} order by date DESC
+  </select>
+  <!-- 模糊查询介绍类帖子 -->
+  <select id="selectIntroPostFuzzy" resultMap="BaseResultMap">
+  	select 
+  	<include refid="select_column"></include>
+	where status=0 and type=1 and post_title like #{postTitle,jdbcType=VARCHAR} order by date DESC
+  </select>
+  <!-- 模糊查询热帖 -->
+  <select id="selectHotPostFuzzy" resultMap="BaseResultMap">
+  	select 
+  	<include refid="select_column"></include>
+	where status=0 and post_title like #{postTitle,jdbcType=VARCHAR} order by praised_times DESC
+  </select>
+  <!-- 根据用户id查询帖子的数量 -->
+  <select id="selectCountByUserId"  parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  	select count(id)
+  	from post_tb where status=0 and user_id= #{id,jdbcType=INTEGER}
+  </select>
+  <!-- 根据用户id查询帖子集  -->
+  <select id="selectByUserId" resultMap="BaseResultMap">
+  	select 
+	<include refid="select_column"></include>
+    where user_id= #{id,jdbcType=INTEGER} and status=0 order by date DESC
+  </select>
+  <!-- 查询正常和被查封 -->
+  <select id="selectNormalAndSealed" resultMap="BaseResultMap">
+  	select 
+	<include refid="select_column"></include>
+    order by date DESC
+  </select>
+  <!-- 根据参数选择性模糊查询 -->
+  <select id="fuzzySelectSelective" resultMap="BaseResultMap">
+    select 
+	<include refid="select_column"></include>
+	where 
+	<if test="id != null">
+		id=#{id}
+	</if>
+	<if test="postTitle != null and postTitle != ''">
+		post_title like CONCAT('%',#{postTitle},'%')
+	</if>
+	<if test="user != null">
+		username CONCAT('%',#{user.username},'%')
+	</if>
+	and (status=0 or status=1)
+  </select>
+  <!-- 查封帖子 -->
+  <update id="sealById">
+  	update post_tb
+  	set
+  	status=1
+  	where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!-- 解封帖子 -->
+  <update id="unSealById">
+  	update post_tb
+  	set
+  	status=0
+  	where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!-- 关键词搜索 -->
+  <select id="selectByKeyword" resultMap="BaseResultMap">
+  	select 
+  	<include refid="select_column"></include>
+	where status=0 and post_title like #{postTitle,jdbcType=VARCHAR} order by praised_times DESC
+  </select>
+  <!-- 查询未审阅的 -->
+  <select id="selectNotReview" resultMap="BaseResultMap">
+    select 
+	<include refid="select_column"></include>
+	where 
+	<if test="id != null">
+		id=#{id} and 
+	</if>
+	<if test="postTitle != null and postTitle != ''">
+		post_title like CONCAT('%',#{postTitle},'%') and 
+	</if>
+	<if test="user != null">
+		username CONCAT('%',#{user.username},'%') and 
+	</if>
+	status=2
+  </select>
+  <!-- 根据年代查询 -->
+  <select id="selectByCentury" resultMap="BaseResultMap">
+  	select 
+	<include refid="select_column"></include>
+	where 
+	century=#{century} and status=0
+  </select>
+</mapper>

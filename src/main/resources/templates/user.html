@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title th:text="${user.username + '的个人中心'}">个人中心</title>
+	<link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+	<script type="text/javascript" src="../static/bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<style>
+		span,a,p,label{
+			font-size: 12px;
+		}
+		body{
+			background-color: #97d4f1;
+		}
+		li{
+			list-style: none;
+		}
+		.user-message-area{
+			background-color: #f5f7fa;
+			padding: 10px;
+			border-bottom: 1px #cacad6 solid;
+		}
+		.contact-area{
+			margin-top: 15px;
+			padding: 0;
+			
+		}
+		.top-pic-area{
+			padding: 0;
+		}
+		.info-area{
+			min-height: 70px;
+			line-height: 70px;
+		}
+		.username-area, .gender-area, .rank-area, .post-count-area{
+			padding: 0;
+		}
+		.nav-area{
+			background-color: #f5f7fa;
+			padding: 0;
+		}
+		.post-area{
+			background-color: #FFFFFF;
+		}
+		.post-li{
+			padding: 15px;
+		}
+		.post-title{
+			padding: 0;
+		}
+		.hide-msg{
+			display: none;
+		}
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+</script>
+	<div class="container">
+	<!-- 隐藏用户id -->
+	<input type="text" class="hide-user-id hide-msg" value="" th:value="${user.id}">
+	<!-- 隐藏用户名 -->
+	<input type="text" class="hide-user-name hide-msg" value="" th:value="${user.username}">
+		<div class="row user-area">
+			<div class="col-lg-12 top-pic-area">
+				<img src="../static/img/sea2.png" width="100%"/>
+			</div> 
+			<!-- 用户信息区域 -->
+			<div class="col-lg-12 user-message-area">
+				<!-- 用户头像 -->
+				<div class="user-profile-area col-lg-2">
+					<img src="" th:src="${user.userImage.path}" width="100%"> 
+				</div>
+				<!--用户描述-->
+                <div class="col-lg-10 user-desc-area">
+                	<!--联系-->
+					<div class="col-lg-12 contact-area">
+						<div class="col-lg-1 secret-msg-area">
+							<button type="button" class="btn btn-sm btn-danger" onclick="show_secret_msg_modal()">私信</button>
+						</div>
+						<div class="col-lg-1 concern-area" th:switch="${alreadyConcern}">
+							<button type="button" class="btn btn-sm btn-primary concern-btn" onclick="concern()" th:if="${not alreadyConcern}">关注</button>
+							<button type="button" class="btn btn-sm concern-btn btn-danger" onclick="cancel_concern()" th:if="${alreadyConcern}">取消关注</button>
+						</div>
+						<div class="back col-lg-1 col-lg-offset-8">
+							<button class="btn btn-default btn-sm" onclick="javascript:history.back(-1);">返回</button>
+						</div>
+					</div>
+					<!--介绍-->
+					<div class="col-lg-12 info-area">
+						<div class="col-lg-3 username-area">
+							<label class="text-muted">用户名:</label>
+							<span class="text-info" th:text="${user.username}"></span>
+						</div>
+						<div class="col-lg-2 gender-area" th:switch="${user.gender}">
+							<label class="text-muted">性别:</label>
+							<span class="text-info" th:case="1">男</span>
+							<span class="text-info" th:case="0">女</span>
+						</div>
+						<div class="col-lg-2 rank-area" th:switch="${user.rank}">
+							<label class="text-muted">等级:</label>
+							<span class="text-info" th:case="1">初级粉丝:Lv1</span>
+							<span class="text-info" th:case="2">初级粉丝:Lv2</span>
+							<span class="text-info" th:case="3">初级粉丝:Lv3</span>
+							<span class="text-info" th:case="4">正式会员:Lv4</span>
+							<span class="text-info" th:case="5">正式会员:Lv5</span>
+							<span class="text-info" th:case="6">正式会员:Lv6</span>
+						</div>
+						<div class="col-lg-2 post-count-area">
+							<label class="text-muted">发帖:</label>
+							<span class="text-info" th:text="${postCount}"></span>
+						</div>
+					</div>
+					<!--禁言-->
+					<div class="col-lg-1 col-lg-offset-11 shut-up">
+						<a href="javascript:;">
+							<span class="text-muted shutup" onclick="shutup()" th:if="${user.shutup == 0}">禁言</span>
+							<span class="text-muted disabled"  th:if="${user.shutup == 1}">已禁言</span>
+						</a>
+					</div>
+                </div>
+			</div>
+			<!--导航栏-->
+			<div class="nav-area col-lg-12">
+				<ul class="nav nav-tabs">
+					<li role="presentation" class="active presentation" value="0"><a href="javascript:;">他的帖子</a></li>
+					<li role="presentation" class="presentation" value="1"><a href="javascript:;">他的资料</a></li>
+				</ul>
+			</div>
+			<!--帖子区域-->
+			<div class="post-area col-lg-12">
+				<ul class="post-ul" th:each="post : ${posts}">
+					<li class="col-lg-12 post-li">
+						<div class="col-lg-12 post-title-area">
+							<a href="javascript:;" class="col-lg-9 post-title">
+								<span th:text="${post.postTitle}"></span>
+							</a>
+							<span class="col-lg-3" th:text="${#dates.format(post.date,'yyyy年MM月dd日')}"></span>
+						</div>
+						<div class="col-lg-12 post-body-area">
+							<span class="text-info" th:text="${post.postBody}"></span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- 私信 -->
+	<div class="modal fade" id="secret-msg-modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title text-muted">发私信给用户: </h4>
+				</div>
+				<div class="modal-body">
+					 <div class="form-group">
+			             <label for="recipient-name" class="control-label text-muted">私信:</label>
+			             <input type="text" class="form-control" id="secret-msg-input" placeholder="请输入你所要发送的消息....">
+			         </div>
+				</div>
+				<div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			        <button type="button" class="btn btn-primary" onclick="send_secret_msg()">发送</button>
+		      	</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/*
+		导航栏按钮事件
+		*/
+		$(".presentation").each(function(index,item){
+			$(item).click(function(){
+				/*
+				状态控制
+				*/
+				$(".presentation").each(function(index,item){
+					$(item).removeClass("active")
+				})
+				$(this).addClass("active");
+				/*
+				数据更新
+				*/
+				var val = $(this).val();
+				var userId = $(".hide-user-id").val();
+				if(val == 0){
+					$.get("/post/queryUserPost",{id:userId},function(result){
+						var Ul = build_user_post(result);
+						$(".post-area").empty().append(Ul)
+					})
+				}else{
+					$.get("/data/queryUserData",{id:userId},function(result){
+						var Ul = build_user_data(result);
+						$(".post-area").empty().append(Ul)
+					})
+				}
+			})
+		});
+				
+				
+		/*
+		构建用户的帖子
+		*/
+		function build_user_post(result){
+			var posts = result.extend.posts;
+			var postUl = $("<ul></ul>")
+			if(posts.length == 0){
+				return postUl.append($("<span class='col-lg-12 text-info' style='padding:15px;'>该用户暂无帖子</span>"))	
+			}
+			$.each(posts,function(index,item){
+				//帖子标题
+				var postTitleSpan = $("<span class='text-info col-lg-9' style='padding:0;'></span>").append(item.postTitle)
+				//var postTitleA = $("<a href='javascript:;' class='col-lg-9 post-title'></a>").append(postTitleSpan)
+				var postDateSpan = $("<span class='col-lg-3'></span>").append(dateFormat(new Date(item.date)))
+				var postTitleDiv = $("<div class='col-lg-12 post-title-area'></div>").append(postTitleSpan).append(postDateSpan)
+				//帖子内容
+				var postBodySpan = $("<span class='text-muted'></span>").append(item.postBody)
+				var postBodyDiv = $("<div class='col-lg-12 post-body-area'></div>").append(postBodySpan)
+				var postLi = $("<li class='col-lg-12 post-li'></li>").append(postTitleDiv).append(postBodyDiv)
+				postUl.append(postLi)
+			})
+			return postUl;
+		}
+		/*
+		构建用户的资料
+		*/
+		function build_user_data(result){
+			var datas = result.extend.datas
+			var dataUl = $("<ul></ul>")
+			if(datas.length == 0){
+				return dataUl.append($("<span class='col-lg-12 text-info' style='padding:15px;'>该用户暂未上传资料</span>"))	
+			}
+			$.each(datas,function(index,item){
+				//文件名字
+				var dataNameSpan = $("<span class='text-info col-lg-9' style='padding:0;'></span>").append("文件名: ").append(item.name)
+				//var dataNameA = $("<a href='javascript:;' class='col-lg-9 data-title' style='padding:0;'></a>").append(dataNameSpan)
+				var dataNameDiv = $("<div class='col-lg-12 data-title-area'></div>").append(dataNameSpan)
+				//文件描述
+				var description = "暂无描述"
+				if(item.description != ""){
+					description = item.description
+				}
+				var dataDescSpan = $("<span class='text-muted'></span>").append("描述: ").append(description)
+				var dataDescDiv = $("<div class='col-lg-12 data-body-area'></div>").append(dataDescSpan)
+				var dataLi = $("<li class='col-lg-12 data-li' style='padding:15px;'></li>").append(dataNameDiv).append(dataDescDiv)
+				dataUl.append(dataLi)
+			})
+			return dataUl;
+		}
+		
+		/*
+		显示发私信面板
+		*/
+		function show_secret_msg_modal(){
+			$.ajax({
+				type: 'GET',
+				url: '/user/getSessionUser',
+				success: function (result){
+					if(result.code == 1){
+						$("#secret-msg-modal").modal("show")
+						$(".modal-title").append(result.extend.user.username)
+					}else 
+						alert("登录后才能发私信!")
+				}
+			})
+		}
+		
+		/*
+		私信
+		*/
+		function send_secret_msg(){
+			var userId = $(".hide-user-id").val()
+			var secretMsg = $("#secret-msg-input").val()
+			$.post('/secret/sendSecretMsg',{receverId:userId,msg:secretMsg},function(result){
+				$("#secret-msg-modal").modal("hide")
+				alert(result.msg)
+			})
+		}
+		
+		/*
+		关注
+		*/
+		function concern(){
+			var userId = $(".hide-user-id").val()
+			$.ajax({
+				type: 'POST',
+				url: '/userConcern/concernOther',
+				data: 'id='+userId,
+				success: function(result){
+					if(result.code == 1){
+						var ele = $("<button type='button' class='btn btn-sm concern-btn btn-danger' onclick='cancel_concern()'>取消关注</button>")
+						$(".concern-area").empty().append(ele)
+					}else
+						alert(result.msg)
+				}
+			})
+		}
+		
+		/*
+		取消关注
+		*/
+		function cancel_concern(){
+			var userId = $(".hide-user-id").val()
+			$.ajax({
+				type: 'POST',
+				url: '/userConcern/cancelConcern',
+				data: 'id='+userId,
+				success: function(result){
+					if(result.code == 1){
+						var ele = $("<button type='button' class='btn btn-sm btn-primary concern-btn' onclick='concern()'>关注</button>")
+						$(".concern-area").empty().append(ele)
+					}else
+						alert(result.msg)
+				}
+			})
+			
+		}
+		
+		/*
+		禁言
+		*/
+		function shutup(){
+			var userId = $(".hide-user-id").val()
+			$.post("/user/shutup",{userId:userId},function(result){
+				if(result.code){
+					$(".shutup").text("已禁言").addClass("disabled");
+				}else{
+					alert(result.msg)
+				}
+			})
+		}
+		
+		/*
+		时间格式转换
+		*/
+	
+		function dateFormat(date){
+			var datetime = date.getFullYear()
+		        + "年"// "年"
+		        + ((date.getMonth() + 1) > 10 ? (date.getMonth() + 1) : "0"
+		                + (date.getMonth() + 1))
+		        + "月"// "月"
+		        + (date.getDate() < 10 ? "0" + date.getDate() : date
+		                .getDate())
+		        + "日";//"日"
+		 	return datetime;
+		}
+	</script>
+</body>
+</html>

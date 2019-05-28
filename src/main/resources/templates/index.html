@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中国桥梁网</title>
+<link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="../static/css/index.css" />
+<link rel="stylesheet" href="../static/css/bootstrapValidator.min.css">
+<link rel="stylesheet" href="../static/wangEditor/wangEditor.min.css"/>
+<script type="text/javascript" src="../static/bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../static/js/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../static/js/index.js"></script>
+<script type="text/javascript" src="../static/js/index-build.js"></script>
+<script type="text/javascript" src="../static/js/post-build.js"></script>
+<script type="text/javascript" src="../static/wangEditor/wangEditor.min.js"></script>
+<style type="text/css">
+option {
+	line-height: 25px;	
+}
+.bridge-type-search{
+	line-height: 15px;
+}
+</style>
+</head>
+
+<body style="background-color: #dceffe;">
+
+	<div class="container" style="background-color: #ffffff;">
+		<div class="container-header">
+
+			<!-- 作者：1693546464@qq.com
+                	时间：2019-03-10
+                	描述：logo  登录和注册区域 -->
+
+			<div class="logoandlogin">
+				<div class="logo-top">
+                    <a href="http://localhost:8080/index"> 
+                        <img src="../static/img/logo_top.png" />
+					</a>
+				</div>
+				<div class="login-top">
+					<button type="button" class="btn btn-primary" data-toggle="modal"
+						data-target="#loginModal" id="loginBtn">登录</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal"
+						data-target="#registerModal" id="registerBtn">注册</button>
+				</div>
+			</div>
+
+			<!-- 作者：1693546464@qq.com
+                	时间：2019-03-10
+                	描述：导航栏 -->
+
+			<div class="nav-top">
+				<div class="inner">
+					<nav class="main-menu">
+						<ul class="nav-ul">
+							<li class="active index-nav"><a href="index">首页</a></li>
+							<li class="index-nav"><a href="javascript: ;" onclick="get_all(1,10,0)">介绍区</a></li>
+							<li class="index-nav"><a href="javascript: ;" onclick="get_all(1,10,1)">资料区</a></li>
+							<li class="index-nav"><a href="javascript: ;" onclick="get_all(1,10,2)">求助区</a></li>
+							<li class="index-nav"><a href="javascript: ;" onclick="get_all(1,10,3)">热帖区</a></li>
+							<li style="display: none;" class="person-center-nav index-nav"><a href="javascript: ;" onclick="to_person_center()">个人中心</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- 搜索区域 -->
+		<div class="container-content">
+			<div class="search-area">
+			<!-- 帖子类型 -->
+				<div class="col-lg-5">
+					<div class="input-group">
+						<div class="input-group-btn">
+					        <button type="button" class="btn btn-default dropdown-toggle search-type-btn" value="0" data-toggle="dropdown">所有帖子 <span class="caret"></span></button>
+					        <ul class="dropdown-menu">
+					          <li class="search-type-menu-item" value="1" onclick="search_type_change(this)"><a href="javascript:;">介绍类帖子</a></li>
+					          <li class="search-type-menu-item" value="2" onclick="search_type_change(this)"><a href="javascript:;">资料下载</a></li>
+					          <li class="search-type-menu-item" value="3" onclick="search_type_change(this)"><a href="javascript:;">求助类帖子</a></li>
+					          <li class="search-type-menu-item" value="4" onclick="search_type_change(this)"><a href="javascript:;">热帖</a></li>
+					        </ul>
+				      	</div><!-- /btn-group -->
+						<input type="text" class="form-control search-content" placeholder="请输入关键字搜索....">
+						<span class="input-group-btn">
+                            <button class="btn btn-primary search-go-btn" type="button" onclick="go_search()">搜索</button>
+						</span>
+					</div>
+				</div>
+				<!-- 桥梁分类 -->
+				<div class="col-lg-3" style="height: 35px;line-height: 35px;padding: 3px;text-align: center;">
+					<select class="select" style="font-size: 15px;">
+						<option selected="selected">请选择桥梁类型类型</option>
+						<option>铁路桥</option>
+						<option>公路桥</option>
+						<option>人行桥</option>
+						<option>高架桥</option>
+						<option>木桥</option>
+						<option>钢桥</option>
+						<option>钢筋混凝土桥</option>
+					</select>
+					<!-- <button type="button" class="bridge-type-search btn btn-primary btn-sm" onclick="bridge_type_change()" style="margin-left: 10px;">搜索</button> -->
+				</div>
+				<!-- 桥梁年代 -->
+				<div class="col-lg-3" style="height: 35px;line-height: 35px;padding: 3px;text-align: center;">
+					<select class="century-select" style="font-size: 15px;">
+						<option selected="selected">请选择桥梁年代</option>
+						<option>18世纪前</option>
+						<option>18-19世纪</option>
+						<option>20世纪</option>
+						<option>21世纪</option>
+					</select>
+					<button type="button" class="bridge-century-search btn btn-primary btn-sm" onclick="bridge_century_change()" style="margin-left: 10px;">搜索</button>
+				</div>
+			</div>
+			<!-- 首页信息中心 -->
+			<div class="row content-main">
+				<div class="content-main-left col-lg-8"> 
+					<!-- 热帖中心区 -->
+					<div class="hot-post-area col-lg-12">
+						<div class="title">
+							<a href="javascript: ;" onclick="get_all(1,10,3)"><span onclick="nav_change(3)" class="title-lable">热帖中心</span></a>
+							<a href="javascript: ;" onclick="get_all(1,10,3)"><span onclick="nav_change(3)" class="title-more"> 查看更多> </span></a>
+						</div>
+						<ul class="hot-post-ul"></ul>
+					</div>
+					<!-- 资料下载区 -->
+					<div class="data-area col-lg-12">
+						<div class="title">
+							<a href="javascript: ;" onclick="get_all(1,10,1)"><span onclick="nav_change(1)" class="title-lable">资料下载</span></a>
+							<a href="javascript: ;" onclick="get_all(1,10,1)"><span onclick="nav_change(1)" class="title-more"> 查看更多> </span></a>
+						</div>
+						
+						<div class="data-area-left col-lg-6"><ul></ul></div>
+						<div class="data-area-right col-lg-6"><ul></ul></div>
+					</div>
+					<!-- 发帖求助区 -->
+					<div class="help-post-area col-lg-12">
+						<div class="title">
+							<a href="javascript: ;" onclick="get_all(1,10,2)"><span onclick="nav_change(2)" class="title-lable">求助中心</span></a>
+							<a href="javascript: ;" onclick="get_all(1,10,2)"><span onclick="nav_change(2)" class="title-more"> 查看更多> </span></a>
+						</div>
+						<ul class="help-post-ul"></ul>
+					</div>
+				</div>
+				
+				<!--桥梁介绍区-->
+				<div class="content-main-right col-lg-4">
+					<div class="title">
+						<a href="javascript: ;" onclick="get_all(1,10,0)"><span onclick="nav_change(0)" class="title-lable" style="font-size: 15px;">介绍中心</span></a>
+						<a href="javascript: ;" onclick="get_all(1,10,0)"><span onclick="nav_change(0)" class="title-more" style="font-size: 10px;"> 查看更多> </span></a>
+					</div>
+					<ul class="intro-post-ul"></ul>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="foot-div">
+		<script>
+		 $(".foot-div").load("/foot");
+		</script>
+	</div>
+
+	<!-- 作者：1693546464@qq.com
+        	时间：2019-03-10
+        	描述：注册框 -->
+
+	<div class="modal fade" id="registerModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">注册新用户<span style="color: red;">(有*号为必填项)</span></h4>
+					</div>
+					<div class="modal-body">
+						<form class="register-form">
+							<div class="form-group">
+								<label class="control-label">用户名 *</label>
+								<input type="text" class="form-control username" id="username" name="username">
+							</div>
+							<div class="form-group">
+								<label class="control-label">密码 *</label>
+								<input type="password" class="form-control password" id="password" name="password">
+							</div>
+							<div class="form-group">
+								<label class="control-label">确认密码 *</label>
+								<input type="password" class="form-control confirmPassword" id="confirmPassword" name="confirmPassword">
+							</div>
+							<div class="form-group">
+								<label class="control-label">手机号</label>
+								<input type="tel" class="form-control phoneNum" id="phoneNum" name="phoneNum">
+							</div>
+							<div class="form-group">
+								<label class="control-label">邮箱</label>
+								<input type="email" class="form-control email" id="email" name="email">
+							</div>
+							<div class="form-group">
+								<label class="control-label">住址</label>
+								<input type="text" class="form-control address" id="address" name="address">
+							</div>
+							<div class="form-group">
+								<label class="control-label">性别 *</label><br>
+								男&nbsp;<input type="radio" class="gender" name="gender" value="1" checked="checked">
+								&nbsp;&nbsp;
+								女&nbsp;<input type="radio" class="gender" name="gender" value="0">
+							</div>
+							<div class="form-group">
+								<input type="checkbox" class="agree" id="agree" name="agree">
+								<span>我已阅读并接受<a href="javascript: ;" data-toggle="modal" data-target="#myModal"> <<用户协议>> </a></span>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+								<button type="submit" class="btn btn-primary" name="submit">确认</button>
+							</div>
+						</form>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<!--
+        	作者：1693546464@qq.com
+        	时间：2019-03-10
+        	描述：登录框
+        -->
+		<div class="modal fade" id="loginModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">用户登录</h4>
+					</div>
+					<div class="modal-body">
+						<form class="login-form">
+							<div class="form-group">
+								<label class="control-label">用户名</label>
+								<input type="text" class="form-control username" name="username">
+							</div> 
+							<div class="form-group">
+								<label class="control-label">密码</label>
+								<input type="password" class="form-control password" name="password">
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary">登录</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<a rel="../static/"></a>
+	<!--
+        	作者：1693546464@qq.com
+        	时间：2019-03-10
+        	描述：用户协议
+        -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">用户协议</h4>
+					<script type="text/javascript">
+						$('#myModal').on('show.bs.modal', function (e) {
+							$.ajax({
+								url: "/index/getUserAggrement",
+							    type: "GET",
+							    async: false,
+							    cache: true,
+							    success: function(result) {
+							    	if(result.code == 1){
+							    		$(".agreement").append(result.extend.msg)
+							    	}else{
+							    		alert("获取文件失败, 请刷新重试!")
+							    	}
+							    }
+							})
+						})
+					</script>
+				</div>
+				<div class="modal-body agreement"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">我知道了</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.DataMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.Data">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="address" jdbcType="VARCHAR" property="address"/>
+    <result column="name" jdbcType="VARCHAR" property="name"/> 
+    <result column="download_times" jdbcType="INTEGER" property="downloadTimes"/>
+    <result column="status" property="status"/>
+    <association property="user" column="user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from data_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.Data" useGeneratedKeys="true" keyProperty="id">
+    insert into data_tb (id, description,
+      type, user_id, date,address,name,download_times,username,status
+      )
+    values (#{id,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{user.id}, #{date,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{downloadTimes,jdbcType=INTEGER}
+      , #{user.username}, #{status}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.Data">
+    update data_tb
+    set description = #{description,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      user_id = #{user.id},
+      date = #{date,jdbcType=TIMESTAMP},
+      address = #{address,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      download_times = #{downloadTimes,jdbcType=INTEGER}
+      status = #{status}
+    where id = #{id,jdbcType=INTEGER} and status=1
+  </update>
+  
+  <update id="updateByIdSelective" parameterType="com.dlu.ghh.bean.Data">
+    update data_tb
+    set
+    <if test="id != null">
+    	id = #{id}
+    </if> 
+    <if test="description != null">
+      , description = #{description,jdbcType=VARCHAR}
+    </if>
+    <if test="type != null">
+      , type = #{type,jdbcType=INTEGER}
+    </if>
+    <if test="user != null">
+      , user_id = #{user.id}
+    </if>
+    <if test="date != null">
+      , date = #{date,jdbcType=TIMESTAMP}
+    </if>
+    <if test="address != null">
+      , address = #{address,jdbcType=VARCHAR}
+    </if>
+    <if test="name != null">
+      , name = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="downloadTimes != null">
+      , download_times = #{downloadTimes,jdbcType=INTEGER}
+    </if>
+    <if test="status != null">
+      , status = #{status}
+    </if>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, description, type, user_id, date, address, name, download_times, status
+    from data_tb
+    where id = #{id,jdbcType=INTEGER} and status=1 order by date DESC
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, description, type, user_id, date, address, name, download_times, status
+    from data_tb where status=1 order by date DESC
+  </select>
+  <!-- 根据用户id查询资料的数量 -->
+  <select id="selectCountByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  	select count(id) 
+  	from data_tb
+  	where user_id = #{id,jdbcType=INTEGER} and status=1
+  </select>
+  <!-- 根据文件名和文件描述进行模糊查询 -->
+  <select id="selectFuzzy" resultMap="BaseResultMap">
+  	select id, description, type, user_id, date, address, name, download_times, status
+    from data_tb 
+	where (name like CONCAT('%',#{content,jdbcType=VARCHAR},'%') or description like CONCAT('%',#{content,jdbcType=VARCHAR},'%')) and status=1 order by date DESC
+  </select>
+  <!-- 根据用户id查询文件 -->
+  <select id="selectByUserId" resultMap="BaseResultMap">
+  	select id, description, type, user_id, date, address, name, download_times, status
+    from data_tb 
+    where user_id=#{id,jdbcType=INTEGER} and status=1 order by date DESC
+  </select>
+  <!-- 根据参数选择性模糊查询 -->
+  <select id="fuzzySelectSelective" resultMap="BaseResultMap">
+    select id, description, type, user_id, date, address, name, download_times, status
+    from data_tb
+	where 
+	<if test="id != null">
+		id=#{id}
+	</if>
+	<if test="name != null and name != ''">
+		name like CONCAT('%',#{name},'%')
+	</if>
+	<if test="description != null">
+		description like CONCAT('%',#{description},'%')
+	</if>
+	<if test="user != null">
+		username CONCAT('%',#{user.username},'%')
+	</if>
+  </select>
+  
+  <!-- 查询未审阅的 -->
+  <select id="selectNotReview" resultMap="BaseResultMap">
+    select id, description, type, user_id, date, address, name, download_times, status
+    from data_tb
+	where 
+	<if test="id != null">
+		id=#{id} and
+	</if>
+	<if test="name != null and name != ''">
+		name like CONCAT('%',#{name},'%') and
+	</if>
+	<if test="description != null">
+		description like CONCAT('%',#{description},'%') and
+	</if>
+	<if test="user != null">
+		username CONCAT('%',#{user.username},'%') and
+	</if>
+	status=0
+  </select>
+  
+</mapper>

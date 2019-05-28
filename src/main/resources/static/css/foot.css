@@ -1,0 +1,32 @@
+#foot{
+	padding-top:5px;
+}
+ .thebottom-back {
+	background-color: #c9282b;
+	width: 100%;
+	height: 164px;
+	text-align: center;
+	color: #f7d0d1;
+}
+
+.aboutus {
+	width: 960px;
+	margin: 0 auto;
+	padding-top: 30px;
+	font-size: 16px;
+}
+
+.aboutus-w {
+	padding: 0 37px;
+	float: left;
+}
+
+.only-phone {
+	display: none;
+}
+
+.thelast {
+	margin-top: 42px;
+    font-size: 14px;
+} 
+ 

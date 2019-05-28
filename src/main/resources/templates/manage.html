@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>管理中心</title>
+		<link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<script type="text/javascript" src="../static/bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+		<style>
+			a,p,span,td{
+				font-size: 12px;
+			}
+			th{
+				font-size: 14px;
+			}
+			.center-block{
+				display: table;
+			}
+			th, td{
+				text-align: center;
+			}
+			.hide-msg{
+				display:none;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 隐藏信息 -->
+		<!-- 隐藏用户名 -->
+		<input class="hide-user-id hide-msg" type="text" value="" th:value="${user.id}"/>
+		<div class="container">
+			<div class="row container-content">
+				<!--导航栏-->
+				<div class="nav-area">
+					<ul class="nav nav-tabs center-block">
+					  <li class="active presentation" value="0"><a href="javascript:;">帖子管理</a></li>
+					  <li class="presentation" value="1"><a href="javascript:;">资料管理</a></li>
+					  <li class="presentation" value="2"><a href="javascript:;">用户管理</a></li>
+					  <li class="presentation" value="3"><a href="javascript:;">审阅中心</a></li>
+					  <li ><a href="/index">返回首页</a></li>
+					</ul>
+				</div>
+				<!--查询区域-->
+				<div class="col-lg-8 col-lg-offset-2 search-area ">
+					<div class="col-lg-12 center-block">
+						<div class="row">
+							<div class="col-lg-12">
+							    <div class="input-group">
+							        <div class="input-group-btn">
+								        <button type="button" class="btn btn-default dropdown-toggle search-type-sel" data-toggle="dropdown">
+								        	查询条件 <span class="caret"></span>
+								        </button>
+								        <ul class="dropdown-menu">
+								          <li value="1" onclick='search_type_change(this)'><a href="javascript:;">帖子id</a></li>
+								          <li value="2" onclick='search_type_change(this)'><a href="javascript:;">帖子标题</a></li>
+								          <li value="3" onclick='search_type_change(this)'><a href="javascript:;">发布日期</a></li>
+								          <li value="4" onclick='search_type_change(this)'><a href="javascript:;">作者名称</a></li>
+								        </ul>
+													        
+							        </div><!-- /btn-group -->
+							        <input type="text" class="form-control search-input" placeholder="请输入关键词查询...">
+							        <div class="input-group-btn">
+							        	<button class="btn btn-default" onclick="to_page(1)">Go</button>
+							        </div>
+							    </div><!-- /input-group -->
+							  </div><!-- /.col-lg-6 -->
+						</div><!-- /.row -->
+					</div>
+				</div>
+				<!--显示列表区域-->
+				<div class="col-lg-12 info-table-area">
+					<table class="table table-hover">
+					<!-- 隐藏id -->
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>标题</th>
+								<th>作者</th>
+								<th>状态</th>
+								<th>
+									<input type="checkbox" onclick="selall(this)" class="selall" title="全选/全不选"/>&nbsp;
+									<a href="javascript:;" onclick="post_remove_checked()"><span title="删除选中" class="text-muted btn btn-xs btn-default">删除</span></a>
+									<a href="javascript:;" onclick="post_seal_checked()"><span title="查封已选" class="text-muted btn btn-xs btn-default">查封</span></a>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="post : ${pageInfo.list}">
+								<td th:text="${postStat.index+1}"></td>
+								<td><a href="javascript:;" onclick="post_detail(this)" th:text="${post.postTitle}" title='点击查看帖子详情'></a></td>
+								<td th:text="${post.user.username}"></td>
+								<td class="status-td" th:switch="${post.status}">
+									<span th:case="0">正常</span>
+									<span th:case="1">查封</span>
+									<span th:case="2">待审阅</span>
+								</td>
+								<td class="opt-td" th:switch="${post.status}">
+									<div th:case="0">
+										<input type="checkbox" name="selSingle" class="selSingle" title="选中" />
+										<span class="btn btn-xs btn-default remove-span" onclick="post_remove(this)">删除</span>
+										<span class="btn btn-xs btn-default seal-span" onclick="post_seal(this)">查封</span>
+									</div>
+									<div th:case="2">
+										<input type="checkbox" name="selSingle" class="selSingle" title="选中" />
+										<span class="btn btn-xs btn-default remove-span" onclick="post_remove(this)">删除</span>
+										<span class="btn btn-xs btn-default seal-span" onclick="post_seal(this)">查封</span>
+									</div>
+									<div th:case="1">
+										<input type="checkbox" name="selSingle" class="selSingle" title="选中" />
+										<span class="btn btn-xs btn-default remove-span" onclick="post_remove(this)">删除</span>
+										<span class="btn btn-xs btn-default unseal-span" onclick="post_unseal(this)">解封</span>
+									</div>
+								</td>
+								<!-- 隐藏帖子id -->
+								<td class="hide-msg"><input type="text" th:value="${post.id}" class="hide-post-id hide-msg"/></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- 导航栏区域 -->
+				<div class="col-lg-12 page-bar-area">
+					<nav class="col-lg-6"></nav>
+					<div class="page-msg-area col-lg-3 col-lg-offset-3">
+						<p>
+						共计&nbsp;<span class="text-muted record-total-num"></span>&nbsp;条记录&nbsp;&nbsp;&nbsp;
+						共&nbsp;<span class="text-muted page-total-num"></span>&nbsp;页&nbsp;&nbsp;&nbsp;
+						当前第&nbsp;<span class="text-muted page-num"></span>&nbsp;页
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="post-modal">
+		    <div class="modal-dialog modal-lg" role="document">
+		    	<div class="modal-content">
+			      	<div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">帖子详情</h4>
+			      	</div>
+			        <div class="modal-body">
+			        	<label>帖子标题</label>
+			        	<p class="post-title-modal text-info"></p>
+			        	<label>帖子内容</label>
+			        	<p class="post-body-modal text-muted"></p>
+			        </div>
+			        <div class="modal-footer">
+			        </div>
+		      </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		<script type="text/javascript">
+			var manageType = 0;//管理类型
+			var searchType = 0;//查询条件
+			var userId = $(".hide-user-id").val()
+			
+			$.get("/post/getAllForManage",{pageNum:1,pageSize:10,keywords:"",type:0},function(result){
+				if(result.extend.pageInfo.pages > 0){
+					var pageUl = build_page_bar(result)
+					$("nav").append(pageUl)
+				}
+			})
+			
+			$(".presentation").click(function () {
+				searchType = 0;
+				manageType = $(this).val()
+				var text = $(this).find("a").text()
+				$(".presentation").each(function (index,item) {
+					$(item).removeClass("active")
+				})
+				$(this).addClass("active")
+				if(text == "帖子管理"){
+					build_post_search_type()
+					to_page(1)
+				}else if(text == "资料管理"){
+					build_data_search_type()
+					to_page(1)
+				}else if(text == "用户管理"){
+					build_user_search_type()	
+					to_page(1)
+				}else if(text == "审阅中心"){
+					build_post_search_type()
+					to_page(1)
+				}
+				$(".search-type-sel").text("查询条件 ").append($("<span class='caret'></span>"))
+			})
+			
+			/*
+			帖子详情
+			*/
+			function post_detail(ele){
+				var tr = $(ele).parent().parent()
+				var postId = tr.find(".hide-msg").find("input").val()
+				$.ajax({
+					type : "GET",
+					cache : false,
+					data: "id="+postId,
+					url : "/post/getPostManage",
+					async: false,
+					success: function(result){
+						if(result.code == 1){
+							var post = result.extend.post;
+							$(".post-body-modal").empty().append(post.postBody);
+							$(".post-title-modal").append(post.postTitle);
+							$("#post-modal").modal("show");
+						}else
+							alert(result.msg)
+					}
+				})
+			}
+			
+			/*
+			 * 构建查询帖子的条件
+			 */
+			function build_post_search_type(){
+				var li1 = $("<li value='1' onclick='search_type_change(this)'><a href='javascript:;'>帖子id</a></li>")
+				var li2 = $("<li value='2' onclick='search_type_change(this)'><a href='javascript:;'>帖子标题</a></li>")
+				var li3 = $("<li value='3' onclick='search_type_change(this)'><a href='javascript:;'>作者名称</a></li>")
+				$(".dropdown-menu").empty()
+								   .append(li1)
+								   .append(li2)
+								   .append(li3)
+			}
+			/*
+			 * 构建查询资料的条件
+			 */
+			function build_data_search_type(){
+				var li1 = $("<li value='1' onclick='search_type_change(this)'><a href='javascript:;'>资料id</a></li>")
+				var li2 = $("<li value='2' onclick='search_type_change(this)'><a href='javascript:;'>资料名字</a></li>")
+				var li3 = $("<li value='3' onclick='search_type_change(this)'><a href='javascript:;'>资料描述</a></li>")
+				var li4 = $("<li value='6' onclick='search_type_change(this)'><a href='javascript:;'>作者名称</a></li>")
+				$(".dropdown-menu").empty()
+								   .append(li1)
+								   .append(li2)
+								   .append(li3)
+								   .append(li4)
+			}
+			/*
+			 * 构建查询帖子的条件
+			 */
+			function build_user_search_type(){
+				var li1 = $("<li value='1' onclick='search_type_change(this)'><a href='javascript:;'>用户id</a></li>")
+				var li2 = $("<li value='2' onclick='search_type_change(this)'><a href='javascript:;'>用户名字</a></li>")
+				var li3 = $("<li value='3' onclick='search_type_change(this)'><a href='javascript:;'>用户地址</a></li>")
+				var li4 = $("<li value='4' onclick='search_type_change(this)'><a href='javascript:;'>用户角色</a></li>")
+				$(".dropdown-menu").empty()
+								   .append(li1)
+								   .append(li2)
+								   .append(li3)
+								   .append(li4)
+			}
+			/*
+			查询类型改变
+			*/
+			function search_type_change (ele) {
+				searchType = $(ele).val()
+				$(".search-type-sel").text($(ele).find("a").text())
+			}
+			
+			
+			/*
+				查询数据
+			*/
+			function to_page(pageNum){
+				var url;//地址
+				var keywords = $(".search-input").val();//关键词
+				if(manageType == 0){//帖子
+					url = "/post/getAllForManage"
+				}else if(manageType == 1){//资料
+					url = "/data/getAllForManage"
+				}else if(manageType == 2){//用户
+					url = "/user/getAllForManage"
+				}else if(manageType == 3){//帖子审阅
+					url = "/post/getAllForReview"
+				}else if(manageType == 4){//资料审阅
+					url = "/data/getAllForReview"
+				}
+				$.get(url,{pageNum:pageNum,pageSize:10,keywords:keywords,type:searchType},function(result){
+					if(result.code == 1){
+						if(manageType == 0){
+							build_post_table(result);
+						}else if(manageType == 1){
+							build_data_table(result);
+						}else if(manageType == 2){
+							build_user_table(result);
+						}else if(manageType == 3){
+							build_post_for_review_table(result);
+						}else if(manageType == 4){
+							build_data_for_review_table(result);
+						}
+						var pageBar = build_page_bar(result)
+						$("nav").empty().append(pageBar)
+					}else{
+						alert(result.msg)						
+					}
+				})
+			}
+			
+			/*
+				构建待审阅资料列表
+			*/
+			function build_data_for_review_table(result){
+				//构建thead
+				var thead = $("<thead></thead>")
+				var tr = $("<tr></tr>")
+				var th1 = $("<th>#</th>")
+				var th2 = $("<th>文件名</th>")
+				var th3 = $("<th>描述</th>")
+				var th4 = $("<th>作者</th>")
+				tr.append(th1).append(th2).append(th3).append(th4)
+				thead.append(tr)
+				//构建tbody
+				var tbody = $("<tbody></tbody>")
+				var datas = result.extend.pageInfo.list;
+				var pageNum = result.extend.pageInfo.pageNum;
+				var pageSize = result.extend.pageInfo.pageSize;
+				$.each(datas,function(index,item){
+					var tr = $("<tr></tr>")
+					var indexTd = $("<td></td>").append((pageNum-1)*pageSize+index+1)
+					var dataNameA = $("<a href='"+item.address+"' download='download' title='点击查看资料详情'></a>").append(item.name)
+					var dataNameTd = $("<td></td>").append(dataNameA)
+					var dataDescTd = $("<td></td>").append(item.description==""?"暂无描述":item.description)
+					var userTd = $("<td></td>").append(item.user.username)
+					var hideDataIdInput = $("<input type='text' value='"+item.id+"' class='hide-data-id hide-msg'/>")
+					var hideDataIdTd = $("<td class='hide-msg'></td>").append(hideDataIdInput)
+					var reviewSpan = $("<span class='btn btn-sm btn-default' onclick='data_review(this)'>审阅</span>")
+					var reviewTd = $("<td></td>").append(reviewSpan)
+					tr.append(indexTd).append(dataNameTd).append(dataDescTd).append(userTd).append(hideDataIdTd).append(reviewTd)
+					tbody.append(tr)
+				})
+				$("select").remove();
+				var select = $("<select class='review-type' onchange='review_type_change()'></select>")
+				var option1 = $("<option>审阅帖子</option>")
+				var option2 = $("<option selected='selected'>审阅资料</option>")
+				select.append(option1).append(option2)
+				var selectDiv = $("<div class='col-lg-12'></div>").append(select)
+				$("table").before(selectDiv)
+				$("table").empty().append(thead).append(tbody)
+			}
+			
+			/*
+				审阅帖子
+			*/
+			function post_review(ele){
+				var tr = $(ele).parent().parent().parent();
+				var postId = tr.find(".hide-msg").find("input").val();
+				$.post("/post/reviewPost",{id:postId},function(result){
+					if(result.code == 1){
+						tr.remove();
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				审阅资料
+			*/
+			function data_review(ele){
+				var tr = $(ele).parent().parent();
+				var dataId = tr.find(".hide-msg").find("input").val();
+				$.post("/data/reviewData",{id:dataId},function(result){
+					if(result.code == 1){
+						tr.remove();
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				审阅类型变化
+			*/
+			function review_type_change(){
+				var text = $("select").find("option:selected").text();
+				if(text == "审阅帖子"){
+					manageType = 3;
+					build_post_search_type();
+				}else if(text == "审阅资料"){
+					manageType = 4;
+					build_data_search_type();
+				}
+				to_page(1)
+			}
+			
+			/*
+				构建待审阅帖子列表
+			*/
+			function build_post_for_review_table(result){
+				//构建thead
+				var thead = $("<thead></thead>")
+				var tr = $("<tr></tr>")
+				var th1 = $("<th>#</th>")
+				var th2 = $("<th>标题</th>")
+				var th3 = $("<th>作者</th>")
+				var th4 = $("<th>状态</th>")
+				tr.append(th1).append(th2).append(th3).append(th4)
+				thead.append(tr)
+				//构建tbody
+				var tbody = $("<tbody></tbody>")
+				var posts = result.extend.pageInfo.list;
+				var pageNum = result.extend.pageInfo.pageNum;
+				var pageSize = result.extend.pageInfo.pageSize;
+				$.each(posts,function(index,item){
+					var tr = $("<tr></tr>")
+					var indexTd = $("<td></td>").append((pageNum-1)*pageSize+index+1)
+					var postTitleA = $("<a href='javascript:;' onclick='post_detail(this)' title='点击查看帖子详情'></a>").append(item.postTitle)
+					var postTitleTd = $("<td></td>").append(postTitleA)
+					var usernameTd = $("<td></td>").append(item.user.username)
+					var statusTd = $("<td class='status-td'></td>")
+					var statu = ""
+					if(item.status == 0){
+						statu = "正常"
+					}else if(item.status == 1){
+						statu = "查封"
+					}else if(item.status == 2){
+						statu = "待审阅"
+					}
+					var statusSpan = $("<span></span>").append(statu)
+					statusTd.append(statusSpan)
+					var optTd = $("<td class='opt-td'></td>")
+					var reviewSpan = $("<span class='review-sapn btn btn-default btn-sm' onclick='post_review(this)'>审阅</span>")
+					var optDiv = $("<div></div>").append(reviewSpan)
+					optTd.append(optDiv)
+					var hidePostIdInput = $("<input type='text' value='"+item.id+"' class='hide-post-id hide-msg'/>")
+					var hidePostIdTd = $("<td class='hide-msg'></td>").append(hidePostIdInput)
+					tr.append(indexTd).append(postTitleTd).append(usernameTd).append(statusTd).append(optTd).append(hidePostIdTd)
+					tbody.append(tr)
+				})
+				$("select").remove();
+				var select = $("<select class='review-type' onchange='review_type_change()'></select>")
+				var option1 = $("<option selected='selected'>审阅帖子</option>")
+				var option2 = $("<option>审阅资料</option>")
+				select.append(option1).append(option2)
+				var selectDiv = $("<div class='col-lg-12'></div>").append(select)
+				$("table").before(selectDiv)
+				$("table").empty().append(thead).append(tbody)
+			}
+			
+			/*
+				构建帖子列表
+			*/
+			function build_post_table(result){
+				//构建thead
+				var thead = $("<thead></thead>")
+				var tr = $("<tr></tr>")
+				var th1 = $("<th>#</th>")
+				var th2 = $("<th>标题</th>")
+				var th3 = $("<th>作者</th>")
+				var th4 = $("<th>状态</th>")
+				var th5 = $("<th></th>")
+				var checkboxInput = $("<input type='checkbox' onclick='selall(this)' class='selall' title='全选/全不选'/>")
+				var removeA = $("<a href='javascript:;' onclick='post_remove_checked()'><span title='删除选中' class='text-muted btn btn-xs btn-default'>删除</span></a>")
+				var seleadA = $("<a href='javascript:;' onclick='post_seal_checked()'><span title='查封已选' class='text-muted btn btn-xs btn-default'>查封</span></a>")
+				th5.append(checkboxInput).append(removeA).append(seleadA)
+				tr.append(th1).append(th2).append(th3).append(th4).append(th5)
+				thead.append(tr)
+				//构建tbody
+				var tbody = $("<tbody></tbody>")
+				var posts = result.extend.pageInfo.list;
+				var pageNum = result.extend.pageInfo.pageNum;
+				var pageSize = result.extend.pageInfo.pageSize;
+				$.each(posts,function(index,item){
+					var tr = $("<tr></tr>")
+					var indexTd = $("<td></td>").append((pageNum-1)*pageSize+index+1)
+					var postTitleA = $("<a href='javascript:;' onclick='post_detail(this)' title='点击查看帖子详情'></a>").append(item.postTitle)
+					var postTitleTd = $("<td></td>").append(postTitleA)
+					var usernameTd = $("<td></td>").append(item.user.username)
+					var statusTd = $("<td class='status-td'></td>")
+					var statu = ""
+					if(item.status == 0){
+						statu = "正常"
+					}else if(item.status == 1){
+						statu = "查封"
+					}else if(item.status == 2){
+						statu = "待审阅"
+					}
+					var statusSpan = $("<span></span>").append(statu)
+					statusTd.append(statusSpan)
+					var optTd = $("<td class='opt-td'></td>")
+					var optDiv = $("<div></div>")
+					var selSingleInput = $("<input type='checkbox' name='selSingle' class='selSingle' title='选中'/>")
+					var removeSpan = $("<span class='btn btn-xs btn-default remove-span' title='删除' onclick='post_remove(this)'>删除</span>")
+					optDiv.append(selSingleInput).append("&nbsp;")
+					optDiv.append(removeSpan)
+					if(item.status == 0 || item.status == 2){//正常
+						var sealedSpan = $("<span class='btn btn-xs btn-default seal-span' title='查封' onclick='post_seal(this)'>查封</span>")
+						optDiv.append(sealedSpan)
+					}else if(item.status == 1){//查封
+						var unsealedSpan = $("<span class='btn btn-xs btn-default unseal-span' title='解封' onclick='post_unseal(this)'>解封</span>")
+						optDiv.append(unsealedSpan)
+					}
+					optTd.append(optDiv)
+					var hidePostIdInput = $("<input type='text' value='"+item.id+"' class='hide-post-id hide-msg'/>")
+					var hidePostIdTd = $("<td class='hide-msg'></td>").append(hidePostIdInput)
+					tr.append(indexTd).append(postTitleTd).append(usernameTd).append(statusTd).append(optTd).append(hidePostIdTd)
+					tbody.append(tr)
+				})
+				$("select").remove();
+				$("table").empty().append(thead).append(tbody)
+			}
+			/*
+				构建资料列表
+			*/
+			function build_data_table(result){
+				//构建thead
+				var thead = $("<thead></thead>")
+				var tr = $("<tr></tr>")
+				var th1 = $("<th>#</th>")
+				var th2 = $("<th>文件名</th>")
+				var th3 = $("<th>描述</th>")
+				var th4 = $("<th>作者</th>")
+				var th5 = $("<th></th>")
+				var checkboxInput = $("<input type='checkbox' class='selall' onclick='selall(this)' title='选中'/>")
+				var removeA = $("<a href='javascript:;' onclick='data_remove_checked()'><span title='删除已选' class='text-muted btn btn-xs btn-default'>删除</span></a>")
+				th5.append(checkboxInput).append(removeA)
+				tr.append(th1).append(th2).append(th3).append(th4).append(th5)
+				thead.append(tr)
+				//构建tbody
+				var tbody = $("<tbody></tbody>")
+				var datas = result.extend.pageInfo.list;
+				var pageNum = result.extend.pageInfo.pageNum;
+				var pageSize = result.extend.pageInfo.pageSize;
+				$.each(datas,function(index,item){
+					var tr = $("<tr></tr>")
+					var indexTd = $("<td></td>").append((pageNum-1)*pageSize+index+1)
+					var dataNameA = $("<a href='"+item.address+"' download='download' title='点击查看资料详情'></a>").append(item.name)
+					var dataNameTd = $("<td></td>").append(dataNameA)
+					var dataDescTd = $("<td></td>").append(item.description==""?"暂无描述":item.description)
+					var userTd = $("<td></td>").append(item.user.username)
+					var removeSpan = $("<span class='btn btn-xs btn-default' title='删除' onclick='data_remove(this)'>删除</span>")
+					var checkboxInput = $("<input type='checkbox' class='selSingle' title='选中'/>")
+					var removeTd = $("<td></td>").append(checkboxInput).append(removeSpan)
+					var hideDataIdInput = $("<input type='text' value='"+item.id+"' class='hide-data-id hide-msg'/>")
+					var hideDataIdTd = $("<td class='hide-msg'></td>").append(hideDataIdInput)
+					tr.append(indexTd).append(dataNameTd).append(dataDescTd).append(userTd).append(removeTd).append(hideDataIdTd)
+					tbody.append(tr)
+				})
+				$("select").remove();
+				$("table").empty().append(thead).append(tbody)
+				
+			}
+			/*
+				构建用户列表
+			*/
+			function build_user_table(result){
+				//构建thead
+				var thead = $("<thead></thead>")
+				var tr = $("<tr></tr>")
+				var th1 = $("<th>#</th>")
+				var th2 = $("<th>用户ID</th>")
+				var th3 = $("<th>用户名</th>")
+				var th4 = $("<th>性别</th>")
+				var th5 = $("<th>地址</th>")
+				var th6 = $("<th>邮箱</th>")
+				var th7 = $("<th>手机号</th>")
+				var th8 = $("<th>禁言</th>")
+				var th9 = $("<th></th>")
+				var checkboxInput = $("<input type='checkbox' class='selall' onclick='selall(this)' title='选中'/>")
+				var removeA = $("<a href='javascript:;' onclick='user_remove_checked()'><span title='删除选中' class='text-muted btn btn-xs btn-default'>删除</span></a>")
+				var shutupA = $("<a href='javascript:;' onclick='user_shutup_checked()'><span title='禁言选中' class='text-muted btn btn-xs btn-default'>禁言</span></a>")
+				th9.append(checkboxInput).append(removeA).append(shutupA)
+				var th10 = $("<th>角色</th>")
+				tr.append(th1).append(th2).append(th3).append(th4).append(th5).append(th6).append(th7).append(th8).append(th9).append(th10)
+				thead.append(tr)
+				//构建tbody
+				var tbody = $("<tbody></tbody>")
+				var users = result.extend.pageInfo.list;
+				var pageNum = result.extend.pageInfo.pageNum;
+				var pageSize = result.extend.pageInfo.pageSize;
+				$.each(users,function(index,item){
+					var tr = $("<tr></tr>")
+					var indexTd = $("<td></td>").append((pageNum-1)*pageSize+index+1)
+					var idTd = $("<td></td>").append(item.id)
+					var userNameA = $("<a href='/index/toUserPage?id="+item.id+"' title='点击查看用户详情'></a>").append(item.username)
+					var userNameTd = $("<td></td>").append(userNameA)
+					var userGenderTd = $("<td></td>").append(item.gender==0? "女":"男")
+					var userAddressTd = $("<td></td>").append(item.address)
+					var userEmailTd = $("<td></td>").append(item.email)
+					var userPhoneNumTd = $("<td></td>").append(item.phoneNum)
+					var userShutupTd = $("<td class='shutup-td'></td>").append(item.shutup==0? "未禁言":"禁言")
+					var checkboxInput = $("<input type='checkbox' class='selSingle' title='选中'/>")
+					var removeSpan = $("<span class='btn btn-xs btn-default' title='删除' onclick='user_remove(this)'>删除</span>")
+					var optTd = $("<td class='opt-td'></td>").append(checkboxInput).append(removeSpan)
+					if(item.shutup == 0){
+						var shutupSpan = $("<span class='btn btn-xs btn-default shutup-span' title='禁言' onclick='user_shutup(this)'>禁言</span>")
+						optTd.append(shutupSpan)
+					}else if(item.shutup == 1){
+						var unShutupSpan = $("<span class='btn btn-xs btn-default unshutup-span' title='取消禁言' onclick='user_unshutup(this)'>取消禁言</span>")
+						optTd.append(unShutupSpan)
+					}
+					var hideUserIdInput = $("<input type='text' class='hide-user-id hide-msg' value='"+item.id+"'/>")
+					var hideUserIdTd = $("<td class='hide-msg'></td>").append(hideUserIdInput)
+					var option1 = $("<option value='0'>普通用户</option>")
+					var option2 = $("<option value='1'>吧务</option>")
+					var option3 = $("<option value='2'>小吧主</option>")
+					var option4 = $("<option value='3'>吧主</option>")
+					var option5 = $("<option value='4'>超级管理员</option>")
+					if(item.role.id == 0){//一般用户
+						option1.prop("selected","selected")
+					}else if(item.role.id == 1){
+						option2.prop("selected","selected")
+					}else if(item.role.id == 2){
+						option3.prop("selected","selected")
+					}else if(item.role.id == 3){
+						option4.prop("selected","selected")
+					}else if(item.role.id == 4){
+						option5.prop("selected","selected")
+					}
+					
+					var select = $("<select onchange='change_role(this,"+item.role.id+ ","+item.id+")'></select>").append(option1).append(option2).append(option3).append(option4).append(option5)
+					var selectDiv = $("<div></div>").append(select);
+					var roleTd = $("<td></td>").append(selectDiv)
+					tr.append(indexTd).append(idTd).append(userNameTd).append(userGenderTd).append(userAddressTd).append(userEmailTd)
+									  .append(userPhoneNumTd)
+									  .append(userShutupTd)
+									  .append(optTd)
+									  .append(hideUserIdTd)
+									  .append(roleTd)
+					tbody.append(tr)
+				})
+				$("select").remove();
+				$("table").empty().append(thead).append(tbody)
+			}
+			
+			/*
+			构建分页条
+			*/
+			function build_page_bar(result){
+				var ul = $("<ul class='pagination col-lg-12'></ul>")
+				var pageNums = result.extend.pageInfo.navigatepageNums;//所有导航页号
+				var pageNum = result.extend.pageInfo.pageNum;//当前页号
+				var pages = result.extend.pageInfo.pages//总页数
+				var hasPreviousPage = result.extend.pageInfo.hasPreviousPage;//是否有前一页
+				var hasNextPage = result.extend.pageInfo.hasNextPage;//是否有下一页
+				var prePage = result.extend.pageInfo.prePage;//前一页页号
+				var nextPage = result.extend.pageInfo.nextPage;//下一页页号
+				var pageSize = result.extend.pageInfo.pageSize;//每页的数量
+				var firstPageLi = $("<li><a href='javascript:;' onclick='to_page(1)'><span>首页</span></a></li>")//首页按钮
+				var prePageLi = $("<li><a href='javascript:;' onclick='to_page("+prePage+")'><span>&laquo;</span></a></li>")//前一页按钮
+				if(hasPreviousPage == false){//没有上一页
+					firstPageLi.addClass("disabled").prop("onclick","")//禁止状态
+					prePageLi.addClass("disabled").prop("onclick","")//去除标签事件
+				}
+				ul.append(firstPageLi).append(prePageLi)//加入首页 和 上一页
+				//省略标号
+				var omitLi = $("<li><span>...</span></li>");//省略标号
+				if(pages > 5 && pageNum > 3){//总页数大于 5 且 当前页号大于3
+					ul.append(omitLi);
+				}
+				//数字导航按钮
+				if(pages <= 5){//总页数小于等于5
+					$.each(pageNums,function(index,item){//遍历所有导航页号
+						var li = $("<li><a href='javascript:;' onclick='to_page("+item+")'><span>"+item+"</span></a></li>")
+						//状态控制
+						if(item == pageNum){
+							li.addClass("active")
+						}
+						ul.append(li)
+					})
+				}else if(pages > 5){//总页数大于5
+					if(pageNum <= 3){//当前页号小于等于3
+						$.each(pageNums,function(index,item){//遍历所有导航页号
+							if(item <= 5){//页号小于等于5
+								var li = $("<li><a href='javascript:;' onclick='to_page("+item+")'><span>"+item+"</span></a></li>")
+								ul.append(li);
+							}
+							//状态控制
+							if(item == pageNum){
+								li.addClass("active")
+							}
+						})
+					}else if(pageNum >= (pages-2)){//当前页号大于等于最大页号减2
+						$.each(pageNums,function(index,item){//遍历所有导航页号
+							if(item >= (pages-4)){//页号大于等于总页数减4
+								var li = $("<li><a href='javascript:;' onclick='to_page("+item+")'><span>"+item+"</span></a></li>")
+								ul.append(li)
+							}
+							//状态控制
+							if(item == pageNum){
+								li.addClass("active")
+							}
+						})
+					}else {
+						$.each(pageNums,function(index,item){
+							if(item >= (pageNum-2) && item <= (pageNum+2)){
+								var li = $("<li><a href='javascript:;' onclick='to_page("+item+")'><span>"+item+"</span></a></li>")
+								ul.append(li)
+							}
+							//状态控制
+							if(item == pageNum){
+								li.addClass("active")
+							}
+						})
+					}
+				}
+				//省略标号
+				if(pages > 5 && pageNum < (pages-2)){
+					ul.append(omitLi)
+				}
+				var nextPageLi = $("<li><a href='javascript:;' onclick='to_page("+nextPage+")'><span>&raquo;</span></a></li>")//下一页
+				var lastPageLi = $("<li><a href='javascript:;' onclick='to_page("+pages+")'><span>尾页</span></a></li>")//最后一页
+				if(hasNextPage == false){//没有下一页
+					nextPageLi.addClass("disabled").prop("onclick","");
+					lastPageLi.addClass("disabled").prop("onclick","");
+				}
+				ul.append(nextPageLi).append(lastPageLi)
+				//分页信息设置
+				$(".record-total-num").text(result.extend.pageInfo.total)//总记录数
+				$(".page-total-num").text(result.extend.pageInfo.pages)//总页数
+				$(".page-num").text(result.extend.pageInfo.pageNum)//当前页数
+				return ul;
+			}
+			
+			/*
+			全选事件
+			*/
+			function selall(ele){
+				if($(ele).prop("checked")){//选中
+					$(".selSingle").each(function(index,item){
+						$(item).prop("checked","checked")
+					})
+				}else{
+					$(".selSingle").each(function(index,item){
+						$(item).prop("checked","")
+					}) 
+				}
+			}
+			
+			/*
+			改变用户角色
+			*/
+			function change_role(ele,oldRoleId,userId){
+				var newRoleId = $(ele).find("option:selected").val();
+				$.post("/user/changeRole",{roleId:newRoleId,userId:userId},function(result){
+					if(result.code == 0){
+						$(ele).find("option").each(function(index,item){
+							var val = $(item).val()
+							if(val == oldRoleId){
+								$(item).prop("selected","selected");
+							}
+						})
+						alert(result.msg)
+					}
+				})
+			}
+			/*
+				查封选中帖子(多个)
+			*/
+			function post_seal_checked(){
+				var ids = ""
+				$(".selSingle").each(function(index,item){
+					if($(item).prop("checked")){
+						ids += $(item).parent().parent().parent().find(".hide-msg").find("input").val();
+						ids += ","
+					}					
+				})
+				$.post("/post/sealPostMultiple",{ids:ids},function(result){
+					if(result.code == 1){
+						$(".selSingle").each(function(index,item){
+							if($(item).prop("checked")){
+								var tr = $(item).parent().parent().parent()
+								if(tr.find(".status-td").find("span").text() == "正常"){
+									tr.find(".status-td").find("span").text("查封")
+									tr.find(".opt-td").find("div").find(".seal-span").remove()
+									var unsealedSpan = $("<span class='btn btn-xs btn-default unseal-span' title='解封' onclick='post_unseal(this)'>解封</span>")
+									tr.find(".opt-td").find("div").append(unsealedSpan)
+								}
+							}					
+						})
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				删除选中帖子(多个)
+			*/
+			function post_remove_checked(){
+				var ids = ""
+				var count = 0;
+				$(".selSingle").each(function(index,item){
+					if($(item).prop("checked")){
+						ids += $(item).parent().parent().parent().find(".hide-msg").find("input").val();
+						ids += ","
+						count++
+					}					
+				})
+				$.post("/post/removePostMultiple",{ids:ids},function(result){
+					if(result.code == 1){
+						$(".selSingle").each(function(index,item){
+							if($(item).prop("checked")){
+								$(item).parent().parent().parent().remove()
+							}					
+						})
+						var total = parseInt($(".record-total-num").text())
+						total -= count;
+						$(".record-total-num").text(total)
+					}else
+						alert(result.msg)
+				})
+			}
+			/*
+				删除帖子(单个)
+			*/
+			function post_remove(ele){
+				var postId = $(ele).parent().parent().parent().find(".hide-msg").find("input").val()
+				$.post("/post/removePost",{id:postId},function(result){
+					if(result.code == 1){
+						$(ele).parent().parent().parent().remove();
+						var num = parseInt($(".record-total-num").text())
+						num = num-1;
+						$(".record-total-num").text(num)
+					}else
+						alert(result.msg)
+				})
+			}
+			/*
+				查封帖子(单个)
+			*/
+			function post_seal(ele){
+				var postId = $(ele).parent().parent().parent().find(".hide-msg").find("input").val()
+				$.post("/post/sealPost",{id:postId},function(result){
+					if(result.code == 1){
+						var tr = $(ele).parent().parent().parent()
+						tr.find(".status-td").find("span").text("查封")
+						tr.find(".opt-td").find("div").find(".seal-span").remove()
+						var unsealedSpan = $("<span class='btn btn-xs btn-default unseal-span' title='解封' onclick='post_unseal(this)'>解封</span>")
+						tr.find(".opt-td").find("div").append(unsealedSpan)
+					}else
+						alert(result.msg)
+				})
+			}
+			/*
+				解封帖子(单个)
+			*/
+			function post_unseal(ele){
+				var postId = $(ele).parent().parent().parent().find(".hide-msg").find("input").val()
+				$.post("/post/unSealPost",{id:postId},function(result){
+					if(result.code == 1){
+						var tr = $(ele).parent().parent().parent()
+						tr.find(".status-td").find("span").text("正常")
+						tr.find(".opt-td").find("div").find(".unseal-span").remove()
+						var sealedSpan = $("<span class='btn btn-xs btn-default seal-span' title='查封' onclick='post_seal(this)'>查封</span>")
+						tr.find(".opt-td").find("div").append(sealedSpan)
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				删除选中资料(多个)
+			*/
+			function data_remove_checked(){
+				var ids = ""
+				var count = 0;
+				$(".selSingle").each(function(index,item){
+					if($(item).prop("checked")){
+						ids += $(item).parent().parent().find(".hide-msg").find("input").val();
+						ids += ","
+						count++
+					}					
+				})
+				$.post("/data/removeDataMultiple",{ids:ids},function(result){
+					if(result.code == 1){
+						$(".selSingle").each(function(index,item){
+							if($(item).prop("checked")){
+								$(item).parent().parent().remove()
+							}					
+						})
+						var total = parseInt($(".record-total-num").text())
+						total -= count;
+						$(".record-total-num").text(total)
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				删除资料(单个)
+			*/
+			function data_remove(ele){
+				var dataId = $(ele).parent().parent().find(".hide-msg").find("input").val()
+				$.post("/data/removeData",{id:dataId},function(result){
+					if(result.code == 1){
+						$(ele).parent().parent().remove();
+						var num = parseInt($(".record-total-num").text())
+						num = num-1;
+						$(".record-total-num").text(num)
+					}else
+						alert(result.msg)
+				})
+			}
+			/*
+				删除选中用户(多个)
+			*/
+			function user_remove_checked(){
+				var ids = ""
+				var count = 0;
+				$(".selSingle").each(function(index,item){
+					if($(item).prop("checked")){
+						ids += $(item).parent().parent().find(".hide-msg").find("input").val();
+						ids += ","
+						count++
+					}					
+				})
+				$.post("/user/removeUserMultiple",{ids:ids},function(result){
+					if(result.code == 1){
+						$(".selSingle").each(function(index,item){
+							if($(item).prop("checked")){
+								$(item).parent().parent().remove()
+							}					
+						})
+						var total = parseInt($(".record-total-num").text())
+						total -= count;
+						$(".record-total-num").text(total)
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				禁言选中用户(多个)
+			*/
+			function user_shutup_checked(){
+				var ids = ""
+				$(".selSingle").each(function(index,item){
+					if($(item).prop("checked")){
+						ids += $(item).parent().parent().find(".hide-msg").find("input").val();
+						ids += ","
+					}					
+				})
+				$.post("/user/shutupUserMultiple",{ids:ids},function(result){
+					if(result.code == 1){
+						$(".selSingle").each(function(index,item){
+							if($(item).prop("checked")){
+								var tr = $(item).parent().parent()
+								if(tr.find(".shutup-td").text() == "未禁言"){
+									tr.find(".shutup-td").text("禁言")
+									tr.find(".opt-td").find(".shutup-span").remove()
+									var unShutupSpan = $("<span class='btn btn-xs btn-default unshutup-span' title='取消禁言' onclick='user_unshutup(this)'>取消禁言</span>")
+									tr.find(".opt-td").append(unShutupSpan)
+								}
+							}					
+						})
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				删除用户(单个)
+			*/
+			function user_remove(ele){
+				var userId = $(ele).parent().parent().find(".hide-msg").find("input").val()
+				$.post("/user/removeUser",{id:userId},function(result){
+					if(result.code == 1){
+						$(ele).parent().parent().remove();
+						var num = parseInt($(".record-total-num").text())
+						num = num-1;
+						$(".record-total-num").text(num)
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			/*
+				禁言用户(单个)
+			*/
+			function user_shutup(ele){
+				var userId = $(ele).parent().parent().find(".hide-msg").find("input").val()
+				$.post("/user/shutupUser",{id:userId,shutup:1},function(result){
+					if(result.code == 1){
+						var tr = $(ele).parent().parent()
+						tr.find(".shutup-td").text("禁言")
+						tr.find(".opt-td").find(".shutup-span").remove()
+						var unShutupSpan = $("<span class='btn btn-xs btn-default unshutup-span' title='取消禁言' onclick='user_unshutup(this)'>取消禁言</span>")
+						tr.find(".opt-td").append(unShutupSpan)
+					}else
+						alert(result.msg)
+				})
+			}
+			/*
+				取消禁言用户(单个)
+			*/
+			function user_unshutup(ele){
+				var userId = $(ele).parent().parent().find(".hide-msg").find("input").val()
+				$.post("/user/shutupUser",{id:userId,shutup:0},function(result){
+					if(result.code == 1){
+						var tr = $(ele).parent().parent()
+						tr.find(".shutup-td").text("未禁言")
+						tr.find(".opt-td").find(".unshutup-span").remove()
+						var shutupSpan = $("<span class='btn btn-xs btn-default shutup-span' title='禁言' onclick='user_shutup(this)'>禁言</span>")
+						tr.find(".opt-td").append(shutupSpan)
+					}else
+						alert(result.msg)
+				})
+			}
+			
+			
+		</script>
+	</body>
+</html>

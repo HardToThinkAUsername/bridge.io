@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dlu.ghh.mapper.UserConcernMapper">
+  <resultMap id="BaseResultMap" type="com.dlu.ghh.bean.UserConcern">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <association property="user" column="user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+    <association property="concernUser" column="concern_user_id" select="com.dlu.ghh.mapper.UserMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_concern_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dlu.ghh.bean.UserConcern" useGeneratedKeys="true" keyProperty="id">
+    insert into user_concern_tb (id, user_id, concern_user_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{user.id,jdbcType=INTEGER}, #{concernUser.id,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dlu.ghh.bean.UserConcern">
+    update user_concern_tb
+    set user_id = #{user.id,jdbcType=INTEGER},
+      concern_user_id = #{concernUser.id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, user_id, concern_user_id
+    from user_concern_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, concern_user_id
+    from user_concern_tb
+  </select>
+    <!-- 根据用户id和被关注用户id查询 -->
+  <select id="selectByUserIdAndConcernUserId" resultMap="BaseResultMap">
+    select id, user_id, concern_user_id
+    from user_concern_tb
+    where user_id=#{userId,jdbcType=INTEGER} and concern_user_id=#{concernUserId,jdbcType=INTEGER}
+  </select>
+  <!-- 根据用户user_id查询 -->
+  <select id="selectByUserId" resultMap="BaseResultMap">
+  	select id, user_id, concern_user_id
+    from user_concern_tb
+    where user_id=#{userId}
+  </select>
+</mapper>
