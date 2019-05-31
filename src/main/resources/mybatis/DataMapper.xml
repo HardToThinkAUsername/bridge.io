@@ -112,7 +112,7 @@
 		description like CONCAT('%',#{description},'%')
 	</if>
 	<if test="user != null">
-		username CONCAT('%',#{user.username},'%')
+		username like CONCAT('%',#{user.username},'%')
 	</if>
   </select>
   

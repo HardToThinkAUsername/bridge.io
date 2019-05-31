@@ -171,7 +171,7 @@
 		post_title like CONCAT('%',#{postTitle},'%')
 	</if>
 	<if test="user != null">
-		username CONCAT('%',#{user.username},'%')
+		username like CONCAT('%',#{user.username},'%')
 	</if>
 	and (status=0 or status=1)
   </select>

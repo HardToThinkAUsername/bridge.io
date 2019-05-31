@@ -55,8 +55,7 @@
 								        <ul class="dropdown-menu">
 								          <li value="1" onclick='search_type_change(this)'><a href="javascript:;">帖子id</a></li>
 								          <li value="2" onclick='search_type_change(this)'><a href="javascript:;">帖子标题</a></li>
-								          <li value="3" onclick='search_type_change(this)'><a href="javascript:;">发布日期</a></li>
-								          <li value="4" onclick='search_type_change(this)'><a href="javascript:;">作者名称</a></li>
+								          <li value="3" onclick='search_type_change(this)'><a href="javascript:;">作者名称</a></li>
 								        </ul>
 													        
 							        </div><!-- /btn-group -->
@@ -202,7 +201,7 @@
 					success: function(result){
 						if(result.code == 1){
 							var post = result.extend.post;
-							$(".post-body-modal").empty().append(post.postBody);
+							$(".post-body-modal").text(post.postBody);
 							$(".post-title-modal").append(post.postTitle);
 							$("#post-modal").modal("show");
 						}else
@@ -230,7 +229,7 @@
 				var li1 = $("<li value='1' onclick='search_type_change(this)'><a href='javascript:;'>资料id</a></li>")
 				var li2 = $("<li value='2' onclick='search_type_change(this)'><a href='javascript:;'>资料名字</a></li>")
 				var li3 = $("<li value='3' onclick='search_type_change(this)'><a href='javascript:;'>资料描述</a></li>")
-				var li4 = $("<li value='6' onclick='search_type_change(this)'><a href='javascript:;'>作者名称</a></li>")
+				var li4 = $("<li value='4' onclick='search_type_change(this)'><a href='javascript:;'>作者名称</a></li>")
 				$(".dropdown-menu").empty()
 								   .append(li1)
 								   .append(li2)

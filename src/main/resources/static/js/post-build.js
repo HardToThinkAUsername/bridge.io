@@ -211,7 +211,7 @@ function build_post_detail(result) {//container-content  dateFormat
 	var prasingA = $("<a href='javascript:;' class='prasing-post btn btn-xs btn-default'></a>").append(prasingSpan)
 	var commentSpan = $("<span>回复</span>")
 	var commentA = $("<a href='#comment-area' class='comment-post btn btn-xs btn-default'></a>").append(commentSpan)
-	var postTitleDiv = $("<div class='col-lg-12' style='height:45px;line-height:45px;border-bottom: 1px solid;'></div>").append(postTitleA).append(prasingA).append("&nbsp;&nbsp;").append(commentA)
+	var postTitleDiv = $("<div class='col-lg-12' style='min-height:45px;line-height:45px;border-bottom: 1px solid;'></div>").append(postTitleA).append(prasingA).append("&nbsp;&nbsp;").append(commentA)
 	//帖子内容
 	var postBodySpan = $("<span></span>").append(post.postBody)
 	var postBodyDiv = $("<div class='col-lg-12'></div>").append(postBodySpan)
@@ -478,7 +478,7 @@ function build_user_Div(user) {
 	var userNameDiv = $("<div class='col-lg-12'></div>").append(userA)
 	//会员等级
 	var rank = user.rank;
-	if(rank = 1){
+	if(rank == 1){
 		rank = "初级粉丝&nbsp;Lv"+rank;
 	}else if(rank == 2){
 		rank = "初级粉丝&nbsp;Lv"+rank;
