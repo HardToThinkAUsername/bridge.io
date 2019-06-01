@@ -199,7 +199,7 @@
   <select id="selectNotReview" resultMap="BaseResultMap">
     select 
 	<include refid="select_column"></include>
-	where 
+	where
 	<if test="id != null">
 		id=#{id} and 
 	</if>
@@ -207,7 +207,7 @@
 		post_title like CONCAT('%',#{postTitle},'%') and 
 	</if>
 	<if test="user != null">
-		username CONCAT('%',#{user.username},'%') and 
+		username like CONCAT('%',#{user.username},'%') and
 	</if>
 	status=2
   </select>
