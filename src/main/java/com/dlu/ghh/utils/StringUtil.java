@@ -40,7 +40,20 @@ public class StringUtil {
 				break;
 			}
 		}
-		return text.toString();
+		Integer index1 = -1;
+		Integer index2 = -1;
+		StringBuffer text2 = new StringBuffer("");
+		String newString = text.toString();
+		while(true){
+			index1 = newString.indexOf("&nbsp;");
+			if(index1 == -1){
+				text2.append(newString.substring(0));
+				break;
+			}
+			text2.append(newString.substring(0,index1));
+			newString = newString.substring(index1+6);
+		}
+		return text2.toString();
 	}
 }
 

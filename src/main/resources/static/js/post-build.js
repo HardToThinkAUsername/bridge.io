@@ -34,13 +34,13 @@ function build_post_all(result){
 		var sameYear = isSameYear(new Date(), date)
 		var dateDiv = $("<div class='date-div col-lg-12'></div>")
 		if(sameDay){// 发布日期和现在是同一天
-			var dateSpan = $("<span class='date-span' title='发布时间'></span>").append(date.getHours()+":").append(date.getMinutes())
+			var dateSpan = $("<span class='date-span' title='发布时间'></span>").append(date.Format("hh:mm:ss"))
 			dateDiv.append(dateSpan)
-		}else if(sameYear){//是同一年 
-			var dateSpan = $("<span class='date-span' title='发布时间'></span>").append(date.getMonth()+"-").append(date.getDay()+"&nbsp;&nbsp;").append(date.getHours()+":").append(date.getMinutes())
+		}else if(sameYear){//是同一年
+			var dateSpan = $("<span class='date-span' title='发布时间'></span>").append(date.Format("MM-dd hh:mm:ss"))
 			dateDiv.append(dateSpan)
 		}else{//不是同一年
-			var dateSpan = $("<span class='date-span' title='发布时间'></span>").append(date.getFullYear()+"-").append(date.getMonth()+"-").append(date.getDay())
+			var dateSpan = $("<span class='date-span' title='发布时间'></span>").append(date.Format("yyyy-MM-dd hh:mm:ss"))
 			dateDiv.append(dateSpan)
 		}
 		userDiv.append(authorDiv).append(dateDiv);

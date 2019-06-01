@@ -68,7 +68,7 @@
   <select id="selectByPostId" resultMap="BaseResultMap">
     select id, user_id, post_id, date, praised_times, replyed_times, content
     from floor_tb 
-    where post_id=#{id,jdbcType=INTEGER} order by date DESC
+    where post_id=#{id,jdbcType=INTEGER}/* order by praised_times DESC date DESC*/
   </select>
   <!-- 根据帖子id删除floor -->
   <delete id="deleteByPostId">
